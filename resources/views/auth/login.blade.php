@@ -5,43 +5,52 @@
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+        <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-full border p-6">
+            <legend class="fieldset-legend text-lg font-semibold">{{ __('Login') }}</legend>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+            <!-- Email Address -->
+            <div class="form-control w-full">
+                <label class="label" for="email">
+                    <span class="label-text">{{ __('Email') }}</span>
+                </label>
+                <input id="email" type="email" name="email"
+                    class="input input-bordered w-full"
+                    value="{{ old('email') }}"
+                    required autofocus autocomplete="username" />
+                <x-input-error :messages="$errors->get('email')" class="mt-1 text-sm text-error" />
+            </div>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+            <!-- Password -->
+            <div class="form-control w-full mt-4">
+                <label class="label" for="password">
+                    <span class="label-text">{{ __('Password') }}</span>
+                </label>
+                <input id="password" type="password" name="password"
+                    class="input input-bordered w-full"
+                    required autocomplete="current-password" />
+                <x-input-error :messages="$errors->get('password')" class="mt-1 text-sm text-error" />
+            </div>
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+            <!-- Remember Me -->
+            <div class="form-control mt-4">
+                <label class="cursor-pointer label">
+                    <input id="remember_me" type="checkbox" class="checkbox" name="remember">
+                    <span class="label-text ml-2">{{ __('Remember me') }}</span>
+                </label>
+            </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
+            <!-- Forgot Password & Submit -->
+            <div class="mt-6 flex justify-between items-center">
+                @if (Route::has('password.request'))
+                    <a class="link text-sm" href="{{ route('password.request') }}">
+                        {{ __('Forgot your password?') }}
+                    </a>
+                @endif
 
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
+                <button class="btn btn-neutral">
+                    {{ __('Log in') }}
+                </button>
+            </div>
+        </fieldset>
     </form>
 </x-guest-layout>
