@@ -13,9 +13,9 @@
                 <label class="label" for="email">
                     <span class="label-text">{{ __('Email') }}</span>
                 </label>
-                <input id="email" type="email" name="email"
-                    class="input input-bordered w-full"
-                    value="{{ old('email') }}"
+                <x-text-input id="email" type="email" name="email"
+                    class="w-full"
+                    :value="old('email')"
                     required autofocus autocomplete="username" />
                 <x-input-error :messages="$errors->get('email')" class="mt-1 text-sm text-error" />
             </div>
@@ -25,15 +25,15 @@
                 <label class="label" for="password">
                     <span class="label-text">{{ __('Password') }}</span>
                 </label>
-                <input id="password" type="password" name="password"
-                    class="input input-bordered w-full"
+                <x-text-input id="password" type="password" name="password"
+                    class="w-full"
                     required autocomplete="current-password" />
                 <x-input-error :messages="$errors->get('password')" class="mt-1 text-sm text-error" />
             </div>
 
             <!-- Remember Me -->
             <div class="form-control mt-4">
-                <label class="cursor-pointer label">
+                <label class="cursor-pointer label" for="remember_me">
                     <input id="remember_me" type="checkbox" class="checkbox" name="remember">
                     <span class="label-text ml-2">{{ __('Remember me') }}</span>
                 </label>

@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
+    <div class="mb-4 text-sm text-base-content opacity-75">
         {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
     </div>
 
@@ -13,11 +13,15 @@
             <legend class="fieldset-legend text-lg font-semibold">{{ __('Reset Password') }}</legend>
 
             <!-- Email Address -->
-            <div class="mb-4">
-                <label for="email" class="label">{{ __('Email') }}</label>
-                <input id="email" name="email" type="email" value="{{ old('email') }}" required autofocus
-                       class="input input-bordered w-full" />
-                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <div class="form-control w-full">
+                <label class="label" for="email">
+                    <span class="label-text">{{ __('Email') }}</span>
+                </label>
+                <x-text-input id="email" name="email" type="email"
+                              :value="old('email')"
+                              required autofocus
+                              autocomplete="username" />
+                <x-input-error :messages="$errors->get('email')" class="mt-1 text-sm text-error" />
             </div>
 
             <div class="flex items-center justify-end mt-6">
