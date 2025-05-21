@@ -19,7 +19,7 @@
                 id="update_password_current_password"
                 name="current_password"
                 type="password"
-                class="input input-bordered w-full mt-1 block"
+                class="w-full mt-1 block"
                 autocomplete="current-password"
             />
             <x-input-error :messages="$errors->updatePassword->get('current_password')" class="mt-2" />
@@ -31,7 +31,7 @@
                 id="update_password_password"
                 name="password"
                 type="password"
-                class="input input-bordered w-full mt-1 block"
+                class="w-full mt-1 block"
                 autocomplete="new-password"
             />
             <x-input-error :messages="$errors->updatePassword->get('password')" class="mt-2" />
@@ -43,14 +43,14 @@
                 id="update_password_password_confirmation"
                 name="password_confirmation"
                 type="password"
-                class="input input-bordered w-full mt-1 block"
+                class="w-full mt-1 block"
                 autocomplete="new-password"
             />
             <x-input-error :messages="$errors->updatePassword->get('password_confirmation')" class="mt-2" />
         </div>
 
         <div class="flex items-center gap-4">
-            <x-primary-button class="btn btn-primary">
+            <x-primary-button>
                 {{ __('Save') }}
             </x-primary-button>
 

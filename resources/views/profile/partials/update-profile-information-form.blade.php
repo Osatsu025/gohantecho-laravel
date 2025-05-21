@@ -23,7 +23,7 @@
                 id="name"
                 name="name"
                 type="text"
-                class="input input-bordered w-full mt-1 block"
+                class="w-full mt-1 block"
                 :value="old('name', $user->name)"
                 required
                 autofocus
@@ -38,7 +38,7 @@
                 id="email"
                 name="email"
                 type="email"
-                class="input input-bordered w-full mt-1 block"
+                class="w-full mt-1 block"
                 :value="old('email', $user->email)"
                 required
                 autocomplete="username"
@@ -68,7 +68,7 @@
         </div>
 
         <div class="flex items-center gap-4">
-            <x-primary-button class="btn btn-primary">{{ __('Save') }}</x-primary-button>
+            <x-primary-button>{{ __('Save') }}</x-primary-button>
 
             @if (session('status') === 'profile-updated')
                 <p
