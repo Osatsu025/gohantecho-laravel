@@ -177,5 +177,11 @@
     "Please enter your new password below": "新しいパスワードを入力してください",
     "A reset link will be sent if the account exists.": "アカウントが存在する場合にはリセット用のリンクが送信されます",
     "Ensure your account is using a long, random password to stay secure": "十分に長くランダムなパスワードを使用して、アカウントのセキュリティを高めましょう",
-    "Delete your account and all of its resources": "アカウントを削除して全てのデータを消去"
+    "Delete your account and all of its resources": "アカウントを削除して全てのデータを消去",
+
+    "Edit mail": "メールが届かないときは",
+    "Correct your email please.": "ご登録いただいたメールアドレスはお間違いないでしょうか？お間違いでしたらご修正をお願いいたします。",
+    "Resend Verification Email to this email": "このメールアドレスに確認用メールを再送信する",
+    "Your email is updated and a new verification link has been sent to the email address.": "メールアドレスを更新し、確認用メールを再送信しました。"
+
 }

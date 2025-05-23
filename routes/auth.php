@@ -56,4 +56,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+
+    Route::get('/email/edit', [EmailVerificationNotificationController::class, 'edit'])->name('email.edit');
+    Route::patch('/email', [EmailVerificationNotificationController::class, 'update'])->name('email.update');
 });
