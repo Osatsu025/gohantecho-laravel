@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600">
+    <div class="mb-4 text-sm text-base-content opacity-75">
         {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
     </div>
 
@@ -9,17 +9,26 @@
     <form method="POST" action="{{ route('password.email') }}">
         @csrf
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
+        <fieldset class="fieldset bg-base-200 border-base-300 rounded-box p-6 w-xs">
+            <legend class="fieldset-legend text-lg font-semibold">{{ __('Reset Password') }}</legend>
 
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
-        </div>
+            <!-- Email Address -->
+            <div class="form-control w-full">
+                <label class="label" for="email">
+                    <span class="label-text">{{ __('Email') }}</span>
+                </label>
+                <x-text-input id="email" name="email" type="email"
+                              :value="old('email')"
+                              required autofocus
+                              autocomplete="username" />
+                <x-input-error :messages="$errors->get('email')" class="mt-1 text-sm text-error" />
+            </div>
+
+            <div class="flex items-center justify-end mt-6">
+                <button type="submit" class="btn btn-neutral">
+                    {{ __('Email Password Reset Link') }}
+                </button>
+            </div>
+        </fieldset>
     </form>
 </x-guest-layout>
