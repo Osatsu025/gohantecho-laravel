@@ -9,6 +9,12 @@
         </div>
     @endif
 
+    @if (session('status') == 'email-updated')
+        <div class="mb-4 font-medium text-sm text-green-600">
+            {{ __('Your email is updated and a new verification link has been sent to the email address.') }}
+        </div>
+    @endif
+
     <div class="mt-4 flex items-center justify-between space-x-4">
         <form method="POST" action="{{ route('verification.send') }}">
             @csrf
@@ -16,6 +22,13 @@
                 {{ __('Resend Verification Email') }}
             </button>
         </form>
+
+        <a href="{{ route('email.edit')}}">
+            <button type="submit" class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-3">
+                {{ __('Edit mail') }}
+            </button>
+        </a>
+
 
         <form method="POST" action="{{ route('logout') }}">
             @csrf
