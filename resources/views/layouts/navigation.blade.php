@@ -23,7 +23,7 @@
                         <path d="M5.25 7.75L10 12.5l4.75-4.75" stroke="currentColor" stroke-width="1.5" fill="none" />
                     </svg>
                 </div>
-                <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-1 p-2 shadow-sm bg-base-100 rounded-box w-52">
                     <li>
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
