@@ -9,7 +9,8 @@ use Illuminate\Http\Request;
 class MenuController extends Controller
 {
     public function index() {
-        $menus = Menu::with('user')->get();
+        $menus = Menu::with('user')->with('tags')->get();
+
         return view('menus.index', compact('menus'));
     }
 }

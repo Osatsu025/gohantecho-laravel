@@ -16,6 +16,7 @@
                 <tr>
                   <th>タイトル</th>
                   <th>作者</th>
+                  <th>タグ</th>
                 </tr>
               </thead>
               <tbody>
@@ -23,6 +24,11 @@
                 <tr class="hover:bg-base-300">
                   <td>{{ $menu->title }}</td>
                   <td>{{ $menu->user->name }}</td>
+                  <td>
+                  @foreach ($menu->tags as $tag)
+                  {{ $tag->name }} 
+                  @endforeach
+                  </td>
                 </tr>
                 @endforeach
               </tbody>
