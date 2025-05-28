@@ -8,8 +8,15 @@ use Illuminate\Http\Request;
 
 class MenuController extends Controller
 {
-    public function index() {
-        $menus = Menu::with('user')->with('tags')->paginate(20);
+    public function index(Request $request) {
+        $query = Menu::query();
+
+        $keyword = $request->query('keyword');
+        if ($keyword) {
+            $query->where('title', 'like', "%{$keyword}%");
+        }
+        
+        $menus = $query->with('user')->with('tags')->paginate(10);
 
         return view('menus.index', compact('menus'));
     }

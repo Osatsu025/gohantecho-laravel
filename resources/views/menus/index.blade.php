@@ -11,6 +11,25 @@
       <div class="overflow-x-auto">
         <div class="p-6 sm:p-8 bg-base-100 shadow-md rounded-lg">
           <div class="max-w-xl mx-auto">
+
+          <form action={{ route('menus.index') }}>
+            <label class="input">
+              <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <g
+                  stroke-linejoin="round"
+                  stroke-linecap="round"
+                  stroke-width="2.5"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <path d="m21 21-4.3-4.3"></path>
+                </g>
+              </svg>
+              <input type="text" class="grow" placeholder={{ __('search')}} name="keyword"/>
+            </label>
+          </form>
+
             <table class="table mb-4">
               <thead>
                 <tr>
