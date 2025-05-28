@@ -11,7 +11,7 @@
       <div class="overflow-x-auto">
         <div class="p-6 sm:p-8 bg-base-100 shadow-md rounded-lg">
           <div class="max-w-xl mx-auto">
-            <table class="table">
+            <table class="table mb-4">
               <thead>
                 <tr>
                   <th>タイトル</th>
@@ -33,6 +33,9 @@
                 @endforeach
               </tbody>
             </table>
+            <div class="mb-4">
+              {{ $menus->links() }}
+            </div>
           </div>
         </div>
       </div>
