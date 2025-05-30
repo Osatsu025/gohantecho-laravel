@@ -26,7 +26,7 @@
                   <path d="m21 21-4.3-4.3"></path>
                 </g>
               </svg>
-              <input type="text" class="grow" placeholder={{ __('search')}} name="keyword"/>
+              <input type="text" class="grow" placeholder={{ __('search')}} name="keyword" value="{{ $keyword }}" />
             </label>
           </form>
 
@@ -53,7 +53,7 @@
               </tbody>
             </table>
             <div class="mb-4">
-              {{ $menus->links() }}
+              {{ $menus->appends(request()->query())->links() }}
             </div>
           </div>
         </div>

@@ -13,11 +13,21 @@ class MenuController extends Controller
 
         $keyword = $request->query('keyword');
         if ($keyword) {
-            $query->where('title', 'like', "%{$keyword}%");
+            $query->where('title', 'like', "%{$keyword}%")
+                    ->orWhere('content', 'like', "%{$keyword}%")
+                    ->orWhereHas('user', function ($query) use ($keyword) {
+                        $query->where('users.name', 'like', "%{$keyword}%");
+                    })
+                    ->orWhereHas('tags', function($query) use ($keyword) {
+                        $query->where('tags.name', 'like', "%{$keyword}%");
+                    });
         }
         
         $menus = $query->with('user')->with('tags')->paginate(10);
 
-        return view('menus.index', compact('menus'));
+        return view('menus.index', compact(
+            'menus',
+            'keyword'
+        ));
     }
 }
