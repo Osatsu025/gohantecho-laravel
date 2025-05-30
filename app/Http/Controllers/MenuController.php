@@ -3,25 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\MenuIndexRequest;
 use App\Models\Menu;
-use Illuminate\Http\Request;
 
 class MenuController extends Controller
 {
-    private const SORT_LIST = [
+    public const SORT_LIST = [
         '作成日の新しい順' => ['column' => 'created_at', 'direction' => 'desc'],
         '作成日の古い順' => ['column' => 'created_at', 'direction' => 'asc'],
         '更新日の新しい順' => ['column' => 'updated_at', 'direction' => 'desc'],
         '更新日の古い順' => ['column' => 'updated_at', 'direction' => 'asc'],
     ];
 
-    public function index(Request $request) {
+    public function index(MenuIndexRequest $request) {
 
         $sort_list = self::SORT_LIST;
         
         $query = Menu::query();
 
-        $keyword = $request->query('keyword');
+        $validated = $request->validated();
+
+        $keyword = $validated['keyword'] ?? null;
         if ($keyword) {
             $query->where('title', 'like', "%{$keyword}%")
                     ->orWhere('content', 'like', "%{$keyword}%")
@@ -35,7 +37,7 @@ class MenuController extends Controller
 
         $query->with('user')->with('tags');
 
-        $sort_type = $request->query('sort_type');
+        $sort_type = $validated['sort_type'] ?? null;
         if ($sort_type) {
             $column = self::SORT_LIST[$sort_type]['column'];
             $direction = self::SORT_LIST[$sort_type]['direction'];
