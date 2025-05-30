@@ -12,7 +12,7 @@
         <div class="p-6 sm:p-8 bg-base-100 shadow-md rounded-lg">
           <div class="max-w-xl mx-auto">
 
-          <form action={{ route('menus.index') }}>
+          <form action="{{ route('menus.index') }}" id="search_form">
             <label class="input">
               <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <g
@@ -26,8 +26,17 @@
                   <path d="m21 21-4.3-4.3"></path>
                 </g>
               </svg>
-              <input type="text" class="grow" placeholder={{ __('search')}} name="keyword" value="{{ $keyword }}" />
+              <input type="text" class="grow" placeholder="{{ __('search')}}" name="keyword" value="{{ $keyword }}" />
             </label>
+            <select class="select select-sm w-auto" name="sort_type" id="sort_type" onchange="document.getElementById('search_form').submit();">
+              @foreach ($sort_list as $name => $conditions)
+                @if ($sort_type === $name)
+                <option value="{{ $name }}" selected>{{ $name }}</option>
+                @else
+                <option value="{{ $name }}">{{ $name }}</option>
+                @endif
+              @endforeach
+            </select>
           </form>
 
             <table class="table mb-4">
