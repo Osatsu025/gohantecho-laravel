@@ -9,6 +9,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Menu extends Model
 {
+    protected $fillable = [
+        'title',
+        'content',
+        'public',
+    ];
+
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class);

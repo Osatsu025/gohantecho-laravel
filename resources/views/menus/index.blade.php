@@ -12,7 +12,7 @@
         <div class="p-6 sm:p-8 bg-base-100 shadow-md rounded-lg">
           <div class="max-w-xl mx-auto">
 
-          <form action="{{ route('menus.index') }}" id="search_form">
+          <form action="{{ route('menus.index') }}" id="search_form" class="flex">
             <label class="input">
               <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <g
@@ -37,6 +37,7 @@
                 @endif
               @endforeach
             </select>
+            <a href="{{ route('menus.create') }}" class="btn btn-neutral ml-auto">新規投稿</a>
           </form>
 
             <table class="table mb-4">

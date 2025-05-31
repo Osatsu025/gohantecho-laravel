@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MenuIndexRequest;
+use App\Http\Requests\MenuStoreRequest;
 use App\Models\Menu;
+use GuzzleHttp\Psr7\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MenuController extends Controller
 {
@@ -54,5 +57,19 @@ class MenuController extends Controller
             'sort_list',
             'sort_type',
         ));
+    }
+
+    public function create() {
+        return view('menus.create');
+    }
+
+    public function store(MenuStoreRequest $request) {
+
+        $validated = $request->validated();
+        /** @var User $user */
+        $user = Auth::user();
+        $user->menus()->create($validated);
+
+        return to_route('menus.index');
     }
 }
