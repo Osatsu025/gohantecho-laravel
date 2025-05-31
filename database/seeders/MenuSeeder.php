@@ -963,16 +963,22 @@ EOT,
                 'public' => true
             ],
         ];
+        
+
+        $now = Carbon::now();
+        $menu_data = [];
 
         foreach ($menus as $menu) {
-            DB::table('menus')->insert([
+            $menu_data[] = [
                 'user_id' => $menu['user_id'],
                 'title' => $menu['title'],
                 'content' => $menu['content'],
                 'public' => $menu['public'],
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
         }
+
+        DB::table('menus')->insert($menu_data);
     }
 }

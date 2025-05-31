@@ -38,12 +38,15 @@ class TagSeeder extends Seeder
             'ごはん', 'パン', 'パスタ', 'うどん', 'そば', '米粉', 'もち',
         ];
 
+        $now = Carbon::now();
+        $tag_data = [];
         foreach($tags as $tag) {
-            DB::table('tags')->insert([
-                'name' => $tag,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ]);
+            $tag_data[] = [
+                    'name' => $tag,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+            ];
         }
+        DB::table('tags')->insert($tag_data);
     }
 }
