@@ -27,7 +27,7 @@ class MenuStoreRequest extends FormRequest
             'content' => ['required', 'string'],
             'public' => ['required', 'boolean'],
             'tag_ids'   => ['nullable', 'array'],
-            'tag_ids*' => ['numeric', Rule::exists('tags', 'id')],
+            'tag_ids.*' => ['numeric', Rule::exists('tags', 'id')],
         ];
     }
 
@@ -35,6 +35,7 @@ class MenuStoreRequest extends FormRequest
     {
         $this->merge([
             'public' => $this->has('public'),
+            'tag_ids' => $this->input('tag_ids', []),
         ]);
     } 
 }
