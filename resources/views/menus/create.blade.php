@@ -24,9 +24,7 @@
 
                 <div>
                   @foreach ($tags as $tag)
-                  <label for="tag-{{ $tag->id }}">
-                    {{ $tag->name }}
-                    <input type="checkbox" class="checkbox mr-2" value="{{ $tag->id }}" id="tag_{{ $tag->id }}" name="tag_ids[]" />
+                    <input type="checkbox" aria-label="{{ $tag->name }}" class="btn btn-xs mr-2 mb-2" value="{{ $tag->id }}" id="tag_{{ $tag->id }}" name="tag_ids[]" />
                   </label>
                   @endforeach
                 </div>
