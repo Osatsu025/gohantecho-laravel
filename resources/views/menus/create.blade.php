@@ -17,10 +17,19 @@
                 <legend class="fieldset-legend">新メニュー</legend>
 
                 <label for="title" class="label">{{ __('Title') }}</label>
-                <input type="text" class="input w-lg" placeholder="" name="title" value="{{ old('title') }}">
+                <input type="text" class="input w-lg" placeholder="タイトル" name="title" value="{{ old('title') }}">
 
                 <label for="content" class="label">{{ __('Content') }}</label>
                 <textarea name="content" id="content" class="textarea w-lg size-100" placeholder="{{ __('Write Ingredients and order of your original recipe or Other sites URL or Restaurants menu you ate') }}">{{ old('content') }}</textarea>
+
+                <div>
+                  @foreach ($tags as $tag)
+                  <label for="tag-{{ $tag->id }}">
+                    {{ $tag->name }}
+                    <input type="checkbox" class="checkbox mr-2" value="{{ $tag->id }}" id="tag_{{ $tag->id }}" name="tag_ids[]" />
+                  </label>
+                  @endforeach
+                </div>
 
                 <label for="public">
                   <input type="checkbox" checked="checked" class="toggle" name="public" id="public" value="1">

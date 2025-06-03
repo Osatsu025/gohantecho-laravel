@@ -26,6 +26,8 @@ class MenuStoreRequest extends FormRequest
             'title' => ['required', 'string', 'max:255'],
             'content' => ['required', 'string'],
             'public' => ['required', 'boolean'],
+            'tag_ids'   => ['nullable', 'array'],
+            'tag_ids*' => ['numeric', Rule::exists('tags', 'id')],
         ];
     }
 
