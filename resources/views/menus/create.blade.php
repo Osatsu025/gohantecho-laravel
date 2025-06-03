@@ -22,16 +22,32 @@
                 <label for="content" class="label">{{ __('Content') }}</label>
                 <textarea name="content" id="content" class="textarea w-lg size-100" placeholder="{{ __('Write Ingredients and order of your original recipe or Other sites URL or Restaurants menu you ate') }}">{{ old('content') }}</textarea>
 
-                <div>
+                <label for="tag_div">タグ</label>
+                <div id="tag_div">
                   @foreach ($tags as $tag)
-                    <input type="checkbox" aria-label="{{ $tag->name }}" class="btn btn-xs mr-2 mb-2" value="{{ $tag->id }}" id="tag_{{ $tag->id }}" name="tag_ids[]" />
-                  </label>
+                    <input
+                      type="checkbox"
+                      aria-label="{{ $tag->name }}"
+                      class="btn btn-xs mr-2 mb-2"
+                      value="{{ $tag->id }}"
+                      id="tag_{{ $tag->id }}"
+                      name="tag_ids[]"
+                      {{ is_array(old('tag_ids')) && in_array($tag->id, old("tag_ids")) ? 'checked' : '' }}
+                    />
                   @endforeach
                 </div>
 
                 <label for="public">
-                  <input type="checkbox" checked="checked" class="toggle" name="public" id="public" value="1">
                   {{ __('Public') }}
+                  <input type="hidden" name="public" value="0">
+                  <input
+                    type="checkbox"
+                    class="toggle"
+                    name="public"
+                    id="public"
+                    value="1"
+                    {{ old('public', '1') == '1' ? 'checked' : '' }}
+                  />
                 </label>
 
                 <button type="submit" class="btn btn-neutral">{{ __('Submit') }}</button>
