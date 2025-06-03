@@ -69,6 +69,10 @@ class MenuTagSeeder extends Seeder
             'アボカドとエビのサラダ' => ['サラダ', '副菜', 'アボカド', 'エビ', 'ヘルシー', 'おしゃれ', 'マヨネーズ', '簡単', '前菜', 'トマト'],
         ];
 
+
+        $now = Carbon::now();
+        $menu_tag_data = [];
+
         foreach ($menuTags as $menuTitle => $tagNames) {
             $menu = DB::table('menus')->where('title', $menuTitle)->first();
 
@@ -80,14 +84,15 @@ class MenuTagSeeder extends Seeder
                 $tag = DB::table('tags')->where('name', $tagName)->first();
 
                 if ($tag) {
-                    DB::table('menu_tag')->insert([
+                    $menu_tag_data[] = [
                         'menu_id' => $menu->id,
                         'tag_id' => $tag->id,
-                        'created_at' => Carbon::now(),
-                        'updated_at' => Carbon::now(),
-                    ]);
+                        'created_at' => $now,
+                        'updated_at' => $now,
+                    ];
                 }
             }
         }
+        DB::table('menu_tag')->insert($menu_tag_data);
     }
 }
