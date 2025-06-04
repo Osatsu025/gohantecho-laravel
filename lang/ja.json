@@ -184,5 +184,11 @@
     "Resend Verification Email to this email": "このメールアドレスに確認用メールを再送信する",
     "Your email is updated and a new verification link has been sent to the email address.": "メールアドレスを更新し、確認用メールを再送信しました。",
 
-    "Menu": "メニュー"
+    "Menu": "メニュー",
+    "Menu_create": "メニュー投稿",
+    "Title": "タイトル",
+    "Content": "本文",
+    "Write Ingredients and order of your original recipe or Other sites URL or Restaurants menu you ate": "オリジナルレシピの材料や手順 / 他のレシピサイトのURL / お店のメニュー など",
+    "Public": "他のユーザに公開する",
+    "Submit": "投稿"
 }

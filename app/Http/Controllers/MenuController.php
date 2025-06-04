@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MenuIndexRequest;
+use App\Http\Requests\MenuStoreRequest;
 use App\Models\Menu;
+use App\Models\Tag;
+use GuzzleHttp\Psr7\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MenuController extends Controller
 {
@@ -54,5 +58,23 @@ class MenuController extends Controller
             'sort_list',
             'sort_type',
         ));
+    }
+
+    public function create() {
+        $tags = Tag::all();
+        return view('menus.create', compact('tags'));
+    }
+
+    public function store(MenuStoreRequest $request) {
+
+        $validated = $request->validated();
+        /** @var User $user */
+        $user = Auth::user();
+        $menu = $user->menus()->create($validated);
+        
+        $tag_ids = array_filter($validated['tag_ids']);
+        $menu->tags()->attach($tag_ids);
+
+        return to_route('menus.index');
     }
 }
