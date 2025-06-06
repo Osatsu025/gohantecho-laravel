@@ -9,6 +9,7 @@ use App\Models\Menu;
 use App\Models\Tag;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class MenuController extends Controller
 {
@@ -72,7 +73,29 @@ class MenuController extends Controller
         $user = Auth::user();
         $menu = $user->menus()->create($validated);
         
-        $tag_ids = array_filter($validated['tag_ids']);
+        $tag_names = [];
+        $tag_names_str = $validated['input_tags'] ?? '';
+        if (trim($tag_names_str) !== '') {
+            $tag_names = array_unique(
+                array_filter(
+                    array_map('trim', explode(' ', $tag_names_str)),
+                    'strlen'
+                )
+            );
+        }
+        $tag_ids = [];
+
+        DB::enableQueryLog();
+        foreach ($tag_names as $tag_name) {
+            $tag = Tag::firstOrCreate([
+                'name' => $tag_name,
+            ]);
+            $tag_ids[] = $tag->id;
+        }
+        $queries = DB::getQueryLog(); // 記録されたクエリを取得
+        DB::disableQueryLog(); 
+        dd($queries);
+
         $menu->tags()->attach($tag_ids);
 
         return to_route('menus.index');

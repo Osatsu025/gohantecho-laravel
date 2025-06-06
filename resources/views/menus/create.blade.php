@@ -22,7 +22,8 @@
                 <label for="content" class="label">{{ __('Content') }}</label>
                 <textarea name="content" id="content" class="textarea w-lg size-100" placeholder="{{ __('Write Ingredients and order of your original recipe or Other sites URL or Restaurants menu you ate') }}">{{ old('content') }}</textarea>
 
-                <label for="tag_div">タグ</label>
+                <label for="tag_input">タグ</label>
+                <input type="text" class="input input-xs" id="tag_input" name="input_tags" placeholder="下から選択するか、半角スペースで区切って入力">
                 <div id="tag_div">
                   @foreach ($tags as $tag)
                     <input
@@ -32,6 +33,7 @@
                       value="{{ $tag->id }}"
                       id="tag_{{ $tag->id }}"
                       name="tag_ids[]"
+                      onchange="add_tag('{{ json_encode($tag, JSON_HEX_APOS | JSON_HEX_QUOT) }}', this)"
                       {{ is_array(old('tag_ids')) && in_array($tag->id, old("tag_ids")) ? 'checked' : '' }}
                     />
                   @endforeach
