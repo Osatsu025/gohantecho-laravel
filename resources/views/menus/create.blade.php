@@ -29,7 +29,8 @@
                     <input
                       type="checkbox"
                       aria-label="{{ $tag->name }}"
-                      class="btn btn-xs mr-2 mb-2"
+                      class="btn btn-xs mr-2 mb-2 tag-checkbox-selector"
+                      data-tag-name="{{ $tag->name }}"
                       value="{{ $tag->id }}"
                       id="tag_{{ $tag->id }}"
                       name="tag_ids[]"

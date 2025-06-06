@@ -47,4 +47,39 @@ function add_tag(tagJsonString, checkboxElement) {
   // 配列を区切り文字で結合してinputの値を更新
   tagsInputElement.value = currentTagsArray.join(separator);
 }
+
+function syncCheckboxesWithInput() {
+  const tagsInputElement = document.getElementById('tag_input');
+  if (!tagsInputElement) {
+    // console.warn("Element with ID 'tag_input' not found for syncing");
+    return;
+  }
+
+  const separator = ' ';
+  const currentTagsInInput = tagsInputElement.value
+    .split(separator)
+    .map(t => t.trim())
+    .filter(t => t.length > 0);
+
+    // タグ選択用のチェックボックスをすべて取得する
+    const allTagCheckboxes = document.querySelectorAll('.tag-checkbox-selector');
+
+    allTagCheckboxes.forEach(checkbox => {
+      const tagName = checkbox.dataset.tagName;  // data-tag-name属性からタグ名を取得
+      if (tagName) { //タグ名が取得できたら
+        checkbox.checked = currentTagsInInput.includes(tagName);
+      }
+    });
+}
+
 window.add_tag = add_tag; 
+
+// DOMが完全に読み込まれた後、またはAlpine.jsの初期化後などにイベントリスナを設定
+document.addEventListener('DOMContentLoaded', () => {
+  const tagsInputElementForSync = document.getElementById('tag_input');
+  if (tagsInputElementForSync) {
+    tagsInputElementForSync.addEventListener('input', syncCheckboxesWithInput);
+    // 初期化時にも一度同期を実行 (ページ読み込み時にinputに値がセットされている場合のため)
+    syncCheckboxesWithInput();
+  }
+});
