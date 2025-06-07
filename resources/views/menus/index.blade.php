@@ -51,11 +51,11 @@
               <tbody>
                 @foreach ($menus as $menu)
                 <tr class="hover:bg-base-300">
-                  <td>{{ $menu->title }}</td>
+                  <td><a href="{{ route('menus.show', $menu) }}">{{ $menu->title }}</a></td>
                   <td>{{ $menu->user->name }}</td>
                   <td>
                   @foreach ($menu->tags as $tag)
-                  {{ $tag->name }} 
+                  <button class="btn btn-xs">{{ $tag->name }} </button>
                   @endforeach
                   </td>
                 </tr>

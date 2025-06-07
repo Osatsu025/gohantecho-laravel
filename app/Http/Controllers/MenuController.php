@@ -96,4 +96,10 @@ class MenuController extends Controller
 
         return to_route('menus.index');
     }
+
+    public function show(Menu $menu) {
+        $menu->load(['user', 'tags']);
+
+        return view('menus.show', compact('menu'));
+    }
 }
