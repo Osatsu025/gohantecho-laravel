@@ -75,10 +75,11 @@ class MenuController extends Controller
         
         $tag_names = [];
         $tag_names_str = $validated['input_tags'] ?? '';
-        if (trim($tag_names_str) !== '') {
+        $normalized_tag_names_str = mb_convert_kana($tag_names_str, 's');
+        if (trim($normalized_tag_names_str) !== '') {
             $tag_names = array_unique(
                 array_filter(
-                    array_map('trim', explode(' ', $tag_names_str)),
+                    array_map('trim', explode(' ', $normalized_tag_names_str)),
                     'strlen'
                 )
             );
