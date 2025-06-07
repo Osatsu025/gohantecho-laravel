@@ -85,16 +85,12 @@ class MenuController extends Controller
         }
         $tag_ids = [];
 
-        DB::enableQueryLog();
         foreach ($tag_names as $tag_name) {
             $tag = Tag::firstOrCreate([
                 'name' => $tag_name,
             ]);
             $tag_ids[] = $tag->id;
         }
-        $queries = DB::getQueryLog(); // 記録されたクエリを取得
-        DB::disableQueryLog(); 
-        dd($queries);
 
         $menu->tags()->attach($tag_ids);
 
