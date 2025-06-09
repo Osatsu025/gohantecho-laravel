@@ -9,7 +9,6 @@ use App\Models\Menu;
 use App\Models\Tag;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class MenuController extends Controller
 {
