@@ -96,7 +96,9 @@ class MenuController extends Controller
 
         $menu->tags()->attach($tag_ids);
 
-        return to_route('menus.index');
+        $message = $menu->title . 'を登録しました';
+
+        return to_route('menus.index')->with('flash_message', $message);
     }
 
     public function show(Menu $menu) {
@@ -106,6 +108,7 @@ class MenuController extends Controller
     }
 
     public function edit(Menu $menu) {
+        self::checkAuthentication($menu);
         $menu->load(['user', 'tags']);
         $tags = Tag::all();
         $selected_tags = $menu->tags->toArray() ?? [];
@@ -120,6 +123,7 @@ class MenuController extends Controller
     }
 
     public function update(MenuStoreRequest $request, Menu $menu) {
+        self::checkAuthentication($menu);
         $validated = $request->validated();
 
         $menu->update($validated);
@@ -146,6 +150,15 @@ class MenuController extends Controller
 
         $menu->tags()->sync($tag_ids);
 
-        return to_route('menus.index');
+        $message = $menu->title . 'を更新しました';
+
+        return to_route('menus.show', $menu)->with('flash_message', $message);
+    }
+
+    private function checkAuthentication(Menu $menu) {
+        if ($menu->user_id !== Auth::id()) {
+            $message = '不正なアクセスです';
+            return to_route('menus.index')->with('error_message', $message);
+        }
     }
 }
