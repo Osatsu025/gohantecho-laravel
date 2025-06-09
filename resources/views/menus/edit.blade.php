@@ -54,7 +54,7 @@
                   />
                 </label>
 
-                <button type="submit" class="btn btn-neutral">{{ __('Submit') }}</button>
+                <button type="submit" class="btn btn-neutral">{{ __('Update') }}</button>
 
               </fieldset>
             </form>
