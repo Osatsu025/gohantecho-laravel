@@ -72,7 +72,26 @@ class MenuController extends Controller
         $user = Auth::user();
         $menu = $user->menus()->create($validated);
         
-        $tag_ids = array_filter($validated['tag_ids']);
+        $tag_names = [];
+        $tag_names_str = $validated['input_tags'] ?? '';
+        $normalized_tag_names_str = mb_convert_kana($tag_names_str, 's');
+        if (trim($normalized_tag_names_str) !== '') {
+            $tag_names = array_unique(
+                array_filter(
+                    array_map('trim', explode(' ', $normalized_tag_names_str)),
+                    'strlen'
+                )
+            );
+        }
+        $tag_ids = [];
+
+        foreach ($tag_names as $tag_name) {
+            $tag = Tag::firstOrCreate([
+                'name' => $tag_name,
+            ]);
+            $tag_ids[] = $tag->id;
+        }
+
         $menu->tags()->attach($tag_ids);
 
         return to_route('menus.index');
