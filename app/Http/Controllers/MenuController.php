@@ -10,6 +10,8 @@ use App\Models\Tag;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\Auth;
 
+use function PHPSTORM_META\map;
+
 class MenuController extends Controller
 {
     public const SORT_LIST = [
@@ -101,5 +103,49 @@ class MenuController extends Controller
         $menu->load(['user', 'tags']);
 
         return view('menus.show', compact('menu'));
+    }
+
+    public function edit(Menu $menu) {
+        $menu->load(['user', 'tags']);
+        $tags = Tag::all();
+        $selected_tags = $menu->tags->toArray() ?? [];
+        $selected_tag_names = array_column($selected_tags, 'name');
+        $input_selected_tags = implode(' ', $selected_tag_names);
+        return view('menus.edit', compact(
+            'menu',
+            'tags',
+            'selected_tags',
+            'input_selected_tags',
+        ));
+    }
+
+    public function update(MenuStoreRequest $request, Menu $menu) {
+        $validated = $request->validated();
+
+        $menu->update($validated);
+
+        $tag_names = [];
+        $tag_names_str = $validated['input_tags'] ?? '';
+        $normalized_tag_names_str = mb_convert_kana($tag_names_str, 's');
+        if (trim($normalized_tag_names_str) !== '') {
+            $tag_names = array_unique(
+                array_filter(
+                    array_map('trim', explode(' ', $normalized_tag_names_str)),
+                    'strlen'
+                )
+            );
+        }
+        $tag_ids = [];
+
+        foreach ($tag_names as $tag_name) {
+            $tag = Tag::firstOrCreate([
+                'name' => $tag_name,
+            ]);
+            $tag_ids[] = $tag->id;
+        }
+
+        $menu->tags()->sync($tag_ids);
+
+        return to_route('menus.index');
     }
 }

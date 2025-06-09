@@ -11,9 +11,12 @@
       <div class="overflow-x-auto">
         <div class="p-6 sm:p-8 bg-base-100 shadow-md rounded-lg">
           <div class="max-w-xl mx-auto">
-            <div class="flex mb-4">
-              <h1 class="text-2xl">{{ $menu->title }}</h1>
-              <h2 class="text-l ml-auto">{{ $menu->user->name }}</h2>
+            <div class="flex items-center mb-4">
+              <h1 class="text-2xl mr-10">{{ $menu->title }}</h1>
+              <h2 class="text-l mr-auto">{{ $menu->user->name }}</h2>
+              @if ($menu->user == Auth::user())
+              <a role="button" class="btn" href="{{ route('menus.edit', $menu) }}">{{ __('Edit') }}</a>
+              @endif
             </div>
             <p class="mb-4">{!! nl2br(e($menu->content)) !!}</p>
             <div>
