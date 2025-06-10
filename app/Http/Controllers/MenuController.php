@@ -74,25 +74,8 @@ class MenuController extends Controller
         $user = Auth::user();
         $menu = $user->menus()->create($validated);
         
-        $tag_names = [];
-        $tag_names_str = $validated['input_tags'] ?? '';
-        $normalized_tag_names_str = mb_convert_kana($tag_names_str, 's');
-        if (trim($normalized_tag_names_str) !== '') {
-            $tag_names = array_unique(
-                array_filter(
-                    array_map('trim', explode(' ', $normalized_tag_names_str)),
-                    'strlen'
-                )
-            );
-        }
-        $tag_ids = [];
-
-        foreach ($tag_names as $tag_name) {
-            $tag = Tag::firstOrCreate([
-                'name' => $tag_name,
-            ]);
-            $tag_ids[] = $tag->id;
-        }
+        $tag_names_str = $validated['input_tags'] ?? [];
+        $tag_ids = self::inputTagsToArray($tag_names_str);
 
         $menu->tags()->attach($tag_ids);
 
@@ -109,6 +92,7 @@ class MenuController extends Controller
 
     public function edit(Menu $menu) {
         self::checkAuthentication($menu);
+
         $menu->load(['user', 'tags']);
         $tags = Tag::all();
         $selected_tags = $menu->tags->toArray() ?? [];
@@ -123,12 +107,30 @@ class MenuController extends Controller
 
     public function update(MenuStoreRequest $request, Menu $menu) {
         self::checkAuthentication($menu);
+
         $validated = $request->validated();
 
         $menu->update($validated);
 
+        $tag_names_str = $validated['input_tags'] ?? [];
+        $tag_ids = self::inputTagsToArray($tag_names_str);
+
+        $menu->tags()->sync($tag_ids);
+
+        $message = $menu->title . 'を更新しました';
+
+        return to_route('menus.show', $menu)->with('flash_message', $message);
+    }
+
+    private function checkAuthentication(Menu $menu) {
+        if ($menu->user_id !== Auth::id()) {
+            $message = '不正なアクセスです';
+            return to_route('menus.index')->with('error_message', $message);
+        }
+    }
+
+    private function inputTagsToArray($tag_names_str) {
         $tag_names = [];
-        $tag_names_str = $validated['input_tags'] ?? '';
         $normalized_tag_names_str = mb_convert_kana($tag_names_str, 's');
         if (trim($normalized_tag_names_str) !== '') {
             $tag_names = array_unique(
@@ -147,17 +149,6 @@ class MenuController extends Controller
             $tag_ids[] = $tag->id;
         }
 
-        $menu->tags()->sync($tag_ids);
-
-        $message = $menu->title . 'を更新しました';
-
-        return to_route('menus.show', $menu)->with('flash_message', $message);
-    }
-
-    private function checkAuthentication(Menu $menu) {
-        if ($menu->user_id !== Auth::id()) {
-            $message = '不正なアクセスです';
-            return to_route('menus.index')->with('error_message', $message);
-        }
+        return $tag_ids;
     }
 }
