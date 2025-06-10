@@ -15,11 +15,12 @@ class MenuSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::where('email', 'gohan@example.com')->first();
+        $user1 = User::where('email', 'gohan@example.com')->first();
+        $user2 = User::where('email', 'tamago@example.com')->first();
 
         $menus = [
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => '鶏肉とじゃがいもの甘辛煮',
                 'content' => <<<EOT
 【材料】（2人分）
@@ -41,7 +42,7 @@ EOT,
                 'public' => true,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => '卵と豆腐の中華スープ',
                 'content' => <<<EOT
 【材料】（2人分）
@@ -61,7 +62,7 @@ EOT,
                 'public' => true,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => 'ツナとブロッコリーのパスタ',
                 'content' => <<<EOT
 【材料】（2人分）
@@ -81,7 +82,7 @@ EOT,
                 'public' => true,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => '洋風ハンバーグ弁当',
                 'content' => <<<EOT
 【材料】（2人分）
@@ -102,7 +103,7 @@ EOT,
                 'public' => true,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => '人参とツナのしりしり風',
                 'content' => <<<EOT
 【材料】（2人分）
@@ -120,7 +121,7 @@ EOT,
                 'public' => false,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => 'ピーマンとベーコンのきんぴら',
                 'content' => <<<EOT
 【材料】（2人分）
@@ -139,7 +140,7 @@ EOT,
                 'public' => true,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => 'ほうれん草と卵の味噌汁',
                 'content' => <<<EOT
 【材料】（2人分）
@@ -156,7 +157,7 @@ EOT,
                 'public' => false,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => 'じゃがいもとウインナーの炒め物',
                 'content' => <<<EOT
 【材料】（2人分）
@@ -172,7 +173,7 @@ EOT,
                 'public' => true,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => '鮭と白菜のミルク煮',
                 'content' => <<<EOT
 【材料】（2人分）
@@ -190,7 +191,7 @@ EOT,
                 'public' => true,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => 'キャベツとハムのマヨ和え',
                 'content' => <<<EOT
 【材料】（2人分）
@@ -207,7 +208,7 @@ EOT,
                 'public' => false,
             ],
                         [
-            'user_id' => $user->id,
+            'user_id' => $user1->id,
             'title' => '肉じゃが',
             'content' => <<<EOT
 【材料】
@@ -230,7 +231,7 @@ EOT,
                 'public' => true,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => 'サバの味噌煮',
                 'content' => <<<EOT
 【材料】
@@ -250,7 +251,7 @@ EOT,
                 'public' => true,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => '親子丼',
                 'content' => <<<EOT
 【材料】
@@ -273,7 +274,7 @@ EOT,
                 'public' => true,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => '豚汁',
                 'content' => <<<EOT
 【材料】
@@ -299,7 +300,7 @@ EOT,
                 'public' => false,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => 'オムライス',
                 'content' => <<<EOT
 【材料】
@@ -322,7 +323,7 @@ EOT,
                 'public' => true,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => 'グラタン',
                 'content' => <<<EOT
 【材料】
@@ -345,7 +346,7 @@ EOT,
                 'public' => true,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => 'ペペロンチーノ',
                 'content' => <<<EOT
 【材料】
@@ -364,7 +365,7 @@ EOT,
                 'public' => true,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => '麻婆豆腐',
                 'content' => <<<EOT
 【材料】
@@ -392,7 +393,7 @@ EOT,
                 'public' => false,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => '回鍋肉',
                 'content' => <<<EOT
 【材料】
@@ -416,7 +417,7 @@ EOT,
                 'public' => true,
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => 'チャーハン',
                 'content' => <<<EOT
 【材料】
@@ -440,7 +441,7 @@ EOT,
             // --- ここからさらに30件のメニュー例 (簡略版) ---
             // 和食系
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => '天ぷら',
                 'content' => <<<EOT
 【材料】
@@ -460,7 +461,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => 'だし巻き卵',
                 'content' => <<<EOT
 【材料】
@@ -477,7 +478,7 @@ EOT,
                 'public' => false
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => '筑前煮',
                 'content' => <<<EOT
 【材料】
@@ -501,7 +502,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => 'おでん',
                 'content' => <<<EOT
 【材料】
@@ -520,7 +521,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => 'ちらし寿司',
                 'content' => <<<EOT
 【材料】
@@ -538,7 +539,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => 'ひじきの煮物',
                 'content' => <<<EOT
 【材料】
@@ -559,7 +560,7 @@ EOT,
             ],
             // 洋食系
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => 'ビーフシチュー',
                 'content' => <<<EOT
 【材料】
@@ -580,7 +581,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => 'ポークソテー',
                 'content' => <<<EOT
 【材料】
@@ -596,7 +597,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => 'シーザーサラダ',
                 'content' => <<<EOT
 【材料】
@@ -612,7 +613,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => 'コーンスープ',
                 'content' => <<<EOT
 【材料】
@@ -628,7 +629,7 @@ EOT,
                 'public' => false
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => 'マルゲリータピザ',
                 'content' => <<<EOT
 【材料】
@@ -645,7 +646,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => 'フレンチトースト',
                 'content' => <<<EOT
 【材料】
@@ -663,7 +664,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => '鮭のムニエル',
                 'content' => <<<EOT
 【材料】
@@ -681,7 +682,7 @@ EOT,
             ],
             // 中華・アジア系
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => 'エビチリ',
                 'content' => <<<EOT
 【材料】
@@ -699,7 +700,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => '酢豚',
                 'content' => <<<EOT
 【材料】
@@ -714,7 +715,7 @@ EOT,
                 'public' => false
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => '春巻き',
                 'content' => <<<EOT
 【材料】（4本分）
@@ -732,7 +733,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => '餃子',
                 'content' => <<<EOT
 【材料】（約10個分）
@@ -749,7 +750,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => 'トムヤムクン',
                 'content' => <<<EOT
 【材料】
@@ -768,7 +769,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => 'ガパオライス',
                 'content' => <<<EOT
 【材料】
@@ -788,7 +789,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => 'フォー',
                 'content' => <<<EOT
 【材料】
@@ -807,7 +808,7 @@ EOT,
             ],
             // その他
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => 'サンドイッチ',
                 'content' => <<<EOT
 【材料】（2組分）
@@ -824,7 +825,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => 'フライドポテト',
                 'content' => <<<EOT
 【材料】
@@ -838,7 +839,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => 'パンケーキ',
                 'content' => <<<EOT
 【材料】（2～3枚分）
@@ -853,7 +854,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => 'フルーツポンチ',
                 'content' => <<<EOT
 【材料】
@@ -867,7 +868,7 @@ EOT,
                 'public' => false
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => '大学芋',
                 'content' => <<<EOT
 【材料】
@@ -882,7 +883,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => '野菜スティック ディップ添え',
                 'content' => <<<EOT
 【材料】
@@ -898,7 +899,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => 'きのこのアヒージョ',
                 'content' => <<<EOT
 【材料】
@@ -915,7 +916,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => '鶏むね肉のハーブ焼き',
                 'content' => <<<EOT
 【材料】
@@ -930,7 +931,7 @@ EOT,
                 'public' => false
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user2->id,
                 'title' => '冷奴 薬味たっぷり',
                 'content' => <<<EOT
 【材料】
@@ -946,7 +947,7 @@ EOT,
                 'public' => true
             ],
             [
-                'user_id' => $user->id,
+                'user_id' => $user1->id,
                 'title' => 'アボカドとエビのサラダ',
                 'content' => <<<EOT
 【材料】
