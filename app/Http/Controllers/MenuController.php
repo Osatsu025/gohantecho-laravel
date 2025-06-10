@@ -117,7 +117,6 @@ class MenuController extends Controller
         return view('menus.edit', compact(
             'menu',
             'tags',
-            'selected_tags',
             'input_selected_tags',
         ));
     }
