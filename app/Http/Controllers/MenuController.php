@@ -124,7 +124,15 @@ class MenuController extends Controller
         return to_route('menus.show', $menu)->with('flash_message', $message);
     }
 
+    public function destroy(Menu $menu) {
+        $menu->delete();
+
+        return to_route('menu.index');
+    }
+
     /**
+     * 対象のメニューへのアクセス権限をチェック
+     * 
      * @param Menu $menu
      * @return null|RedirectResponse 
      */
@@ -137,6 +145,8 @@ class MenuController extends Controller
     }
 
     /**
+     * スペース区切りのタグ名が並んだ文字列から、配列を作成
+     * 
      * @param string $tag_names_str
      * @return int[] Tag IDs
      */
