@@ -8,6 +8,7 @@ use App\Http\Requests\MenuStoreRequest;
 use App\Models\Menu;
 use App\Models\Tag;
 use GuzzleHttp\Psr7\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 
 use function PHPSTORM_META\map;
@@ -91,7 +92,9 @@ class MenuController extends Controller
     }
 
     public function edit(Menu $menu) {
-        self::checkAuthentication($menu);
+        if ($redirect = self::checkAuthentication($menu)) {
+            return $redirect;
+        }
 
         $menu->load(['user', 'tags']);
         $tags = Tag::all();
@@ -106,7 +109,9 @@ class MenuController extends Controller
     }
 
     public function update(MenuStoreRequest $request, Menu $menu) {
-        self::checkAuthentication($menu);
+        if ($redirect = self::checkAuthentication($menu)) {
+            return $redirect;
+        }
 
         $validated = $request->validated();
 
@@ -122,11 +127,12 @@ class MenuController extends Controller
         return to_route('menus.show', $menu)->with('flash_message', $message);
     }
 
-    private function checkAuthentication(Menu $menu) {
+    private function checkAuthentication(Menu $menu): ?RedirectResponse {
         if ($menu->user_id !== Auth::id()) {
             $message = '不正なアクセスです';
             return to_route('menus.index')->with('error_message', $message);
         }
+        return null;
     }
 
     private function inputTagsToArray($tag_names_str) {
