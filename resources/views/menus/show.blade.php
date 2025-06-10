@@ -25,7 +25,23 @@
               <h1 class="text-2xl mr-10">{{ $menu->title }}</h1>
               <h2 class="text-l mr-auto">{{ $menu->user->name }}</h2>
               @if ($menu->user == Auth::user())
-              <a role="button" class="btn" href="{{ route('menus.edit', $menu) }}">{{ __('Edit') }}</a>
+              <a role="button" class="btn mr-2" href="{{ route('menus.edit', $menu) }}">{{ __('Edit') }}</a>
+              <button class="btn btn-error" onclick="delete_modal.showModal()">{{ __('Delete') }}</button>
+              <dialog id="delete_modal" class="modal">
+                <div class="modal-box">
+                  <h3 class="text-lg font-bold">{{ __('Do you really want to delete this menu ?') }}</h3>
+                  <div class="modal-action">
+                    <form method="dialog">
+                      <button class="btn">{{ __('Cancel') }}</button>
+                    </form>
+                    <form method="POST" action="{{ route('menus.destroy', $menu) }}">
+                      @csrf
+                      @method('delete')
+                      <input type="submit" value="{{ __('Delete') }}" class="btn btn-error">
+                    </form>
+                  </div>
+                </div>
+              </dialog>
               @endif
             </div>
             <p class="mb-4">{!! nl2br(e($menu->content)) !!}</p>

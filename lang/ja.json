@@ -194,5 +194,7 @@
     "Menu_show": "メニュー詳細",
     "Edit": "編集",
     "Menu_edit": "メニュー編集",
-    "Update": "更新"
+    "Update": "更新",
+    "Delete": "削除",
+    "Do you really want to delete this menu ?": "本当にこのメニューを削除しますか？"
 }

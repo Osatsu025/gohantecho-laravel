@@ -124,6 +124,19 @@ class MenuController extends Controller
         return to_route('menus.show', $menu)->with('flash_message', $message);
     }
 
+    public function destroy(Menu $menu) {
+
+        if ($redirect = self::checkAuthentication($menu)) {
+            return $redirect;
+        }
+        
+        $message = $menu->title . 'を削除しました';
+        
+        $menu->delete();
+
+        return to_route('menus.index')->with('flash_message', $message);
+    }
+
 
     /**
      * 対象のメニューへのアクセス権限をチェック
