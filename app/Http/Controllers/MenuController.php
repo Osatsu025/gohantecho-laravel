@@ -75,7 +75,7 @@ class MenuController extends Controller
         $user = Auth::user();
         $menu = $user->menus()->create($validated);
         
-        $tag_names_str = $validated['input_tags'] ?? [];
+        $tag_names_str = $validated['input_tags'] ?? '';
         $tag_ids = self::inputTagsToArray($tag_names_str);
 
         $menu->tags()->attach($tag_ids);
@@ -98,7 +98,7 @@ class MenuController extends Controller
 
         $menu->load(['user', 'tags']);
         $tags = Tag::all();
-        $selected_tags = $menu->tags->toArray() ?? [];
+        $selected_tags = $menu->tags->toArray();
         $selected_tag_names = array_column($selected_tags, 'name');
         $input_selected_tags = implode(' ', $selected_tag_names);
         return view('menus.edit', compact(
@@ -117,7 +117,7 @@ class MenuController extends Controller
 
         $menu->update($validated);
 
-        $tag_names_str = $validated['input_tags'] ?? [];
+        $tag_names_str = $validated['input_tags'] ?? '';
         $tag_ids = self::inputTagsToArray($tag_names_str);
 
         $menu->tags()->sync($tag_ids);
