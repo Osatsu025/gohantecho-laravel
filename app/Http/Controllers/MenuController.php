@@ -95,9 +95,9 @@ class MenuController extends Controller
 
         $menu->load(['user', 'tags']);
         $tags = Tag::all();
-        $selected_tags = $menu->tags->toArray();
-        $selected_tag_names = array_column($selected_tags, 'name');
-        $input_selected_tags = implode(' ', $selected_tag_names);
+
+        $input_selected_tags = self::tagsCollectionToString($menu->tags);
+
         return view('menus.edit', compact(
             'menu',
             'tags',
@@ -124,11 +124,6 @@ class MenuController extends Controller
         return to_route('menus.show', $menu)->with('flash_message', $message);
     }
 
-    public function destroy(Menu $menu) {
-        $menu->delete();
-
-        return to_route('menu.index');
-    }
 
     /**
      * 対象のメニューへのアクセス権限をチェック
@@ -171,5 +166,18 @@ class MenuController extends Controller
         }
 
         return $tag_ids;
+    }
+
+    /**
+     * メニューからタグを取得しスペース区切りの文字列に変換して返す
+     * 
+     * @param EloquentCollection $selected_tags
+     * @return string
+     */
+    private function tagsCollectionToString($tags) {
+        if ($tags->isEmpty()) {
+            return '';
+        }
+        return $tags->pluck('name')->implode(' ');
     }
 }
