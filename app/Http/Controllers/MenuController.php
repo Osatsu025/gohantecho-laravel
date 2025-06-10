@@ -124,6 +124,10 @@ class MenuController extends Controller
         return to_route('menus.show', $menu)->with('flash_message', $message);
     }
 
+    /**
+     * @param Menu $menu
+     * @return null|RedirectResponse 
+     */
     private function checkAuthentication(Menu $menu): ?RedirectResponse {
         if ($menu->user_id !== Auth::id()) {
             $message = '不正なアクセスです';
@@ -132,7 +136,11 @@ class MenuController extends Controller
         return null;
     }
 
-    private function inputTagsToArray($tag_names_str) {
+    /**
+     * @param string $tag_names_str
+     * @return int[] Tag IDs
+     */
+    private function inputTagsToArray($tag_names_str): array {
         $tag_names = [];
         $normalized_tag_names_str = mb_convert_kana($tag_names_str, 's');
         if (trim($normalized_tag_names_str) !== '') {
