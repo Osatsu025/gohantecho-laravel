@@ -7,7 +7,7 @@ use App\Http\Requests\MenuIndexRequest;
 use App\Http\Requests\MenuStoreRequest;
 use App\Models\Menu;
 use App\Models\Tag;
-use GuzzleHttp\Psr7\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 
 class MenuController extends Controller
@@ -72,8 +72,94 @@ class MenuController extends Controller
         $user = Auth::user();
         $menu = $user->menus()->create($validated);
         
-        $tag_names = [];
         $tag_names_str = $validated['input_tags'] ?? '';
+        $tag_ids = self::inputTagsToArray($tag_names_str);
+
+        $menu->tags()->attach($tag_ids);
+
+        $message = $menu->title . 'を登録しました';
+
+        return to_route('menus.index')->with('flash_message', $message);
+    }
+
+    public function show(Menu $menu) {
+        $menu->load(['user', 'tags']);
+
+        return view('menus.show', compact('menu'));
+    }
+
+    public function edit(Menu $menu) {
+        if ($redirect = self::checkAuthentication($menu)) {
+            return $redirect;
+        }
+
+        $menu->load(['user', 'tags']);
+        $tags = Tag::all();
+
+        $input_selected_tags = self::tagsCollectionToString($menu->tags);
+
+        return view('menus.edit', compact(
+            'menu',
+            'tags',
+            'input_selected_tags',
+        ));
+    }
+
+    public function update(MenuStoreRequest $request, Menu $menu) {
+        if ($redirect = self::checkAuthentication($menu)) {
+            return $redirect;
+        }
+
+        $validated = $request->validated();
+
+        $menu->update($validated);
+
+        $tag_names_str = $validated['input_tags'] ?? '';
+        $tag_ids = self::inputTagsToArray($tag_names_str);
+
+        $menu->tags()->sync($tag_ids);
+
+        $message = $menu->title . 'を更新しました';
+
+        return to_route('menus.show', $menu)->with('flash_message', $message);
+    }
+
+    public function destroy(Menu $menu) {
+
+        if ($redirect = self::checkAuthentication($menu)) {
+            return $redirect;
+        }
+        
+        $message = $menu->title . 'を削除しました';
+        
+        $menu->delete();
+
+        return to_route('menus.index')->with('flash_message', $message);
+    }
+
+
+    /**
+     * 対象のメニューへのアクセス権限をチェック
+     * 
+     * @param Menu $menu
+     * @return null|RedirectResponse 
+     */
+    private function checkAuthentication(Menu $menu): ?RedirectResponse {
+        if ($menu->user_id !== Auth::id()) {
+            $message = '不正なアクセスです';
+            return to_route('menus.index')->with('error_message', $message);
+        }
+        return null;
+    }
+
+    /**
+     * スペース区切りのタグ名が並んだ文字列から、配列を作成
+     * 
+     * @param string $tag_names_str
+     * @return int[] Tag IDs
+     */
+    private function inputTagsToArray($tag_names_str): array {
+        $tag_names = [];
         $normalized_tag_names_str = mb_convert_kana($tag_names_str, 's');
         if (trim($normalized_tag_names_str) !== '') {
             $tag_names = array_unique(
@@ -92,14 +178,19 @@ class MenuController extends Controller
             $tag_ids[] = $tag->id;
         }
 
-        $menu->tags()->attach($tag_ids);
-
-        return to_route('menus.index');
+        return $tag_ids;
     }
 
-    public function show(Menu $menu) {
-        $menu->load(['user', 'tags']);
-
-        return view('menus.show', compact('menu'));
+    /**
+     * メニューからタグを取得しスペース区切りの文字列に変換して返す
+     * 
+     * @param EloquentCollection $selected_tags
+     * @return string
+     */
+    private function tagsCollectionToString($tags) {
+        if ($tags->isEmpty()) {
+            return '';
+        }
+        return $tags->pluck('name')->implode(' ');
     }
 }
