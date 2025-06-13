@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Menu;
+use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Arr;
@@ -210,5 +211,47 @@ class MenuTest extends TestCase
         $this->assertDatabaseHas('menus', [
             'id' => $other_users_menu->id,
         ]);
+    }
+
+    public function test_user_can_store_menus_with_tags()
+    {
+        // データの用意
+        $existing_tag = Tag::factory()->create(['name' => '既存タグ']);
+        $new_tag_name = '新規タグ';
+        $input_tags_string = implode(' ', [$existing_tag->name, $new_tag_name]);
+
+        $menu_data_for_store = array_merge(
+            $this->new_menu_data,
+            ['input_tags' => $input_tags_string]
+        );
+
+        $expected_menu_attributes = Arr::except($menu_data_for_store, ['input_tags']);
+        $expected_menu_attributes['user_id'] = $this->user->id;
+        
+        // post
+        $response = $this->actingAs($this->user)
+                        ->post(route('menus.store'), $menu_data_for_store);
+
+        // アサーション
+
+        // メニューが正しく作られたか
+        $response->assertRedirect(route('menus.index'));
+        $this->assertDatabaseHas('menus', $expected_menu_attributes);
+        $response->assertSessionHas('flash_message');
+        $created_menu = Menu::where('title', $expected_menu_attributes['title'])
+                            ->where('user_id', $this->user->id)
+                            ->latest()
+                            ->first();
+        $this->assertNotNull($created_menu, 'Menu should be created');
+
+        // 正しく関連付けがされているか
+        $this->assertCount(2, $created_menu->tags);
+        $this->assertEqualsCanonicalizing(
+            [$existing_tag->name, $new_tag_name],
+            $created_menu->tags->pluck('name')->all(),
+            'Menu should be associated with the correct tags.'
+        );
+
+        $this->assertDatabaseHas('tags', ['name' => $new_tag_name]);
     }
 }
