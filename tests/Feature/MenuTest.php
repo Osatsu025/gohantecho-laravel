@@ -254,4 +254,62 @@ class MenuTest extends TestCase
 
         $this->assertDatabaseHas('tags', ['name' => $new_tag_name]);
     }
+
+    public function test_user_can_update_menu_with_tags_add_remove_and_keep()
+    {
+        
+        // 初期状態の設定
+        
+        $menu = $this->createMenu($this->user);
+
+        $keep_tag = Tag::factory()->create(['name' => 'keep_tag']);
+        $remove_tag = Tag::factory()->create(['name' => 'remove_tag']);
+        $new_tag_name = 'new_tag';
+
+        $menu->tags()->attach([$keep_tag->id, $remove_tag->id]);
+
+        // 初期状態の確認
+        $menu->refresh();
+        $this->assertCount(2, $menu->tags);
+        $this->assertEqualsCanonicalizing(
+            ['keep_tag', 'remove_tag'],
+            $menu->tags->pluck('name')->all()
+        );
+
+        // 更新用データ準備
+        $update_payload = array_merge(
+            Arr::except($this->new_menu_data, 'input_tags'),
+            ['input_tags' => implode(' ', [$keep_tag->name, $new_tag_name])]
+        );
+
+        // リクエスト実行
+        $response = $this->actingAs($this->user)
+                        ->patch(route('menus.update', $menu), $update_payload);
+
+        // アサーション
+
+        // ページ処理
+        $response->assertRedirect(route('menus.show', $menu));
+        $response->assertSessionHas('flash_message');
+
+        // メニューの更新確認
+        $menu->refresh();
+        $this->assertSame($update_payload['title'], $menu->title);
+        $this->assertSame($update_payload['content'], $menu->content);
+        $this->assertEquals((bool)$update_payload['public'], (bool)$menu->public);
+
+        // 関連付け
+        $this->assertCount(2, $menu->tags, 'Menu should now have 2 tags.');
+        $this->assertEqualsCanonicalizing(
+            [$keep_tag->name, $new_tag_name],
+            $menu->tags->pluck('name')->all(),
+            'Menu tags should be updated to keep_tag and new_tag.'
+        );
+
+        // タグが作成されたか
+        $this->assertDatabaseHas('tags', ['name' => $new_tag_name]);
+
+        // タグが消えていないか
+        $this->assertDatabaseHas('tags', ['name' => $remove_tag->name]);
+    }
 }
