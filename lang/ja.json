@@ -196,5 +196,6 @@
     "Menu_edit": "メニュー編集",
     "Update": "更新",
     "Delete": "削除",
-    "Do you really want to delete this menu ?": "本当にこのメニューを削除しますか？"
+    "Do you really want to delete this menu ?": "本当にこのメニューを削除しますか？",
+    "Delete all menu you have posted along with your account": "これまで投稿したすべてのメニューを一緒に削除する"
 }
