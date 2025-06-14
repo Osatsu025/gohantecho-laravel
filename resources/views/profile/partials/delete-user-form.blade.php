@@ -19,7 +19,7 @@
                 @method('delete')
 
                 <label class="label cursor-pointer my-4">
-                    <input type="checkbox" checked="checked" class="checkbox">
+                    <input type="checkbox" checked="checked" class="checkbox" name="is_delete_menus" value="1">
                     {{ __('Delete all menu you have posted along with your account') }}
                 </label>
                 <div class="modal-action">
