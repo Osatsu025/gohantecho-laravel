@@ -197,5 +197,7 @@
     "Update": "更新",
     "Delete": "削除",
     "Do you really want to delete this menu ?": "本当にこのメニューを削除しますか？",
-    "Delete all menu you have posted along with your account": "これまで投稿したすべてのメニューを一緒に削除する"
+    "Delete all menu you have posted along with your account": "これまで投稿したすべてのメニューを一緒に削除する",
+    "If you delete your account, you will no longer be able to log in or post, and you will not be able to restore it yourself. You can choose whether or not you want to delete your posted menus at the same time from the options.": "アカウントを削除すると、ログインや投稿ができなくなり、ご自身で元に戻すことはできません。投稿したメニューを一緒に削除するかは、オプションから選択できます。",
+    "If you delete your account, you will be unable to log in or post in the future. This action cannot be undone. Are you sure you want to delete your account?": "アカウントを削除すると、今後ログインや投稿ができなくなります。この操作は取り消せません。本当に削除してよろしいですか？"
 }

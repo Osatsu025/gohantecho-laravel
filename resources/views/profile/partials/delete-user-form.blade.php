@@ -5,15 +5,15 @@
         </h2>
 
         <p class="mt-1 text-sm text-base-content">
-            {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Before deleting your account, please download any data or information that you wish to retain.') }}
+        {{ __("If you delete your account, you will no longer be able to log in or post, and you will not be able to restore it yourself. You can choose whether or not you want to delete your posted menus at the same time from the options.") }}
         </p>
     </header>
 
     <button class="btn btn-error" onclick="delete_modal.showModal()">{{ __('Delete') }}</button>
     <dialog id="delete_modal" class="modal">
         <div class="modal-box">
-            <h3 class="text-lg font-bold">{{ __('Are you sure you want to delete your account?') }}</h3>
-            <p class="py-4">{{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}</p>
+            <h3 class="text-lg font-bold">{{ __('If you delete your account, you will be unable to log in or post in the future. This action cannot be undone. Are you sure you want to delete your account?') }}</h3>
+            <p class="py-4">{{ __('') }}</p>
             <form method="POST" action="{{ route('profile.destroy') }}">
                 @csrf
                 @method('delete')
