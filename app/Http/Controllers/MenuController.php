@@ -176,9 +176,9 @@ class MenuController extends Controller
             if ($tag) {
                 if ($tag->trashed()) {
                     $tag->restore();
-                } else {
-                    $tag = Tag::create(['name' => $tag_name]);
                 }
+            } else {
+                $tag = Tag::create(['name' => $tag_name]);
             }
             $tag_ids[] = $tag->id;
         }
