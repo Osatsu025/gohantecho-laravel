@@ -38,6 +38,17 @@
                             </x-dropdown-link>
                         </form>
                     </li>
+
+                    <li>
+                        <x-dropdown-link :href="route('menus.index')">
+                            {{ __('Menu_index') }}
+                        </x-dropdown-link>
+                    </li>
+                    <li>
+                        <x-dropdown-link :href="route('menus.create')">
+                            {{ __('Menu_create') }}
+                        </x-dropdown-link>
+                    </li>
                 </ul>
             </div>
         </div>
