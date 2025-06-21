@@ -177,9 +177,14 @@ class MenuController extends Controller
         $tag_ids = [];
 
         foreach ($tag_names as $tag_name) {
-            $tag = Tag::firstOrCreate([
-                'name' => $tag_name,
-            ]);
+            $tag = Tag::withTrashed()->where('name', $tag_name)->first();
+            if ($tag) {
+                if ($tag->trashed()) {
+                    $tag->restore();
+                }
+            } else {
+                $tag = Tag::create(['name' => $tag_name]);
+            }
             $tag_ids[] = $tag->id;
         }
 

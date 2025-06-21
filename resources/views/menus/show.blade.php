@@ -23,7 +23,11 @@
 
             <div class="flex items-center mb-4">
               <h1 class="text-2xl mr-10">{{ $menu->title }}</h1>
+              @if ($menu->user)
               <h2 class="text-l mr-auto">{{ $menu->user->name }}</h2>
+              @else
+              <h2 class="text-1 mr-auto">{{ __('Unknown') }}</h2>
+              @endif
               @if ($menu->user == Auth::user())
               <a role="button" class="btn mr-2" href="{{ route('menus.edit', $menu) }}">{{ __('Edit') }}</a>
               <button class="btn btn-error" onclick="delete_modal.showModal()">{{ __('Delete') }}</button>
