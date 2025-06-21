@@ -70,7 +70,7 @@
                 @foreach ($menus as $menu)
                 <tr class="hover:bg-base-300">
                   <td><a href="{{ route('menus.show', $menu) }}">{{ $menu->title }}</a></td>
-                  <td>{{ $menu->user->name }}</td>
+                  <td><a href="{{ route('menus.index', ['user_id' => $menu->user->id]) }}">{{ $menu->user->name }}</a></td>
                   <td>
                   @foreach ($menu->tags as $tag)
                   <button class="btn btn-xs">{{ $tag->name }} </button>

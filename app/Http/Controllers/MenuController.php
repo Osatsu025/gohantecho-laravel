@@ -39,6 +39,11 @@ class MenuController extends Controller
                     });
         }
 
+        $user_id = $validated['user_id'] ?? null;
+        if ($user_id) {
+            $query->where('user_id', $user_id);
+        }
+
         $query->with('user')->with('tags');
 
         $sort_type = $validated['sort_type'] ?? null;
