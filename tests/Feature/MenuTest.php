@@ -196,9 +196,7 @@ class MenuTest extends TestCase
                         ->delete(route('menus.destroy', $menu));
         $response->assertRedirect(route('menus.index'));
         $response->assertSessionHas('flash_message');
-        $this->assertDatabaseMissing('menus', [
-            'id' => $menu->id,
-        ]);
+        $this->assertSoftDeleted($menu);
     }
 
     public function test_user_cannot_destroy_other_users_menus()
