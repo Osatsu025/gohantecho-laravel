@@ -57,6 +57,10 @@
                 <option value="{{ $name }}">{{ $name }}</option>
                 @endif
               @endforeach
+
+              @foreach ($sort_list as $name => $details)
+                <option value="{{ $name }}" @selected($sort_type === $name)>{{ $name }}</option>
+              @endforeach
             </select>
             <a href="{{ route('menus.create') }}" class="btn btn-neutral ml-auto">新規投稿</a>
           </form>
