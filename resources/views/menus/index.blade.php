@@ -31,6 +31,9 @@
           @endif
 
           <form action="{{ route('menus.index') }}" id="search_form" class="flex">
+            @if ($author)
+            <input type="hidden" name="author" value="{{ $author }}">
+            @endif
             <label class="input">
               <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <g
@@ -71,7 +74,7 @@
                 <tr class="hover:bg-base-300">
                   <td><a href="{{ route('menus.show', $menu) }}">{{ $menu->title }}</a></td>
                   @if ($menu->user)
-                  <td><a href="{{ route('menus.index', ['user_id' => $menu->user->id]) }}">{{ $menu->user->name }}</a></td>
+                  <td><a href="{{ route('menus.index', ['author' => $menu->user->name]) }}">{{ $menu->user->name }}</a></td>
                   @else
                   <td>{{ __('Unknown') }}</td>
                   @endif

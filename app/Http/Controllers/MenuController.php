@@ -22,44 +22,28 @@ class MenuController extends Controller
     public function index(MenuIndexRequest $request) {
 
         $sort_list = self::SORT_LIST;
-        
-        $query = Menu::query();
 
         $validated = $request->validated();
 
         $keyword = $validated['keyword'] ?? null;
-        if ($keyword) {
-            $query->where('title', 'like', "%{$keyword}%")
-                    ->orWhere('content', 'like', "%{$keyword}%")
-                    ->orWhereHas('user', function ($query) use ($keyword) {
-                        $query->where('users.name', 'like', "%{$keyword}%");
-                    })
-                    ->orWhereHas('tags', function($query) use ($keyword) {
-                        $query->where('tags.name', 'like', "%{$keyword}%");
-                    });
-        }
+        $author = $validated['author'] ?? null;
+        $sort_type = $validated['sort_type'] ?? array_key_first(self::SORT_LIST);
 
-        $user_id = $validated['user_id'] ?? null;
-        if ($user_id) {
-            $query->where('user_id', $user_id);
-        }
+        $query = Menu::query()
+            ->with(['user', 'tags'])
+            ->searchByKeyword($keyword)
+            ->filterByAuthor($author);
 
-        $query->with('user')->with('tags');
-
-        $sort_type = $validated['sort_type'] ?? null;
-        if ($sort_type) {
-            $column = self::SORT_LIST[$sort_type]['column'];
-            $direction = self::SORT_LIST[$sort_type]['direction'];
-            $query->orderBy($column, $direction);
-        } else {
-            $query->orderBy('created_at', 'desc');
-        }
+        $sort_column = self::SORT_LIST[$sort_type]['column'];
+        $sort_direction = self::SORT_LIST[$sort_type]['direction'];
+        $query->orderBy($sort_column, $sort_direction);
 
         $menus = $query->paginate(10);
 
         return view('menus.index', compact(
             'menus',
             'keyword',
+            'author',
             'sort_list',
             'sort_type',
         ));

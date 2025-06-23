@@ -26,7 +26,7 @@ class MenuIndexRequest extends FormRequest
         return [
             'keyword' => ['nullable', 'string',  'max:255'],
             'sort_type' => ['nullable', 'string', Rule::in(array_keys(MenuController::SORT_LIST))],
-            'user_id' => ['nullable', 'numeric', Rule::exists('users', 'id')],
+            'author' => ['nullable', 'string', Rule::exists('users', 'name')],
         ];
     }
 
