@@ -50,14 +50,6 @@
               <input type="text" class="grow" placeholder="{{ __('search')}}" name="keyword" value="{{ $keyword }}" />
             </label>
             <select class="select select-sm w-auto" name="sort_type" id="sort_type" onchange="document.getElementById('search_form').submit();">
-              @foreach ($sort_list as $name => $conditions)
-                @if ($sort_type === $name)
-                <option value="{{ $name }}" selected>{{ $name }}</option>
-                @else
-                <option value="{{ $name }}">{{ $name }}</option>
-                @endif
-              @endforeach
-
               @foreach ($sort_list as $name => $details)
                 <option value="{{ $name }}" @selected($sort_type === $name)>{{ $name }}</option>
               @endforeach
