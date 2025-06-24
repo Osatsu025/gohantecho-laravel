@@ -24,7 +24,7 @@
             <div class="flex items-center mb-4">
               <h1 class="text-2xl mr-10">{{ $menu->title }}</h1>
               @if ($menu->user)
-              <h2 class="text-l mr-auto">{{ $menu->user->name }}</h2>
+              <a href="{{ route('menus.index', ['author' => $menu->user->name]) }}" class="text-l mr-auto">{{ $menu->user->name }}</h2>
               @else
               <h2 class="text-1 mr-auto">{{ __('Unknown') }}</h2>
               @endif
