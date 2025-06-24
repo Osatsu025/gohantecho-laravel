@@ -21,6 +21,8 @@ class MenuController extends Controller
 
     public function index(MenuIndexRequest $request) {
 
+        $this->authorize('viewAny', Menu::class);
+
         $sort_list = self::SORT_LIST;
 
         $validated = $request->validated();
@@ -50,11 +52,14 @@ class MenuController extends Controller
     }
 
     public function create() {
+        $this->authorize('create', Menu::class);
+
         $tags = Tag::all();
         return view('menus.create', compact('tags'));
     }
 
     public function store(MenuStoreRequest $request) {
+        $this->authorize('create', Menu::class);
 
         $validated = $request->validated();
         /** @var User $user */
@@ -72,6 +77,8 @@ class MenuController extends Controller
     }
 
     public function show(Menu $menu) {
+        $this->authorize('view', $menu);
+
         $menu->load(['user', 'tags']);
 
         return view('menus.show', compact('menu'));
