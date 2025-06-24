@@ -31,6 +31,9 @@
           @endif
 
           <form action="{{ route('menus.index') }}" id="search_form" class="flex">
+            @if ($author)
+            <input type="hidden" name="author" value="{{ $author }}">
+            @endif
             <label class="input">
               <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <g
@@ -47,12 +50,8 @@
               <input type="text" class="grow" placeholder="{{ __('search')}}" name="keyword" value="{{ $keyword }}" />
             </label>
             <select class="select select-sm w-auto" name="sort_type" id="sort_type" onchange="document.getElementById('search_form').submit();">
-              @foreach ($sort_list as $name => $conditions)
-                @if ($sort_type === $name)
-                <option value="{{ $name }}" selected>{{ $name }}</option>
-                @else
-                <option value="{{ $name }}">{{ $name }}</option>
-                @endif
+              @foreach ($sort_list as $name => $details)
+                <option value="{{ $name }}" @selected($sort_type === $name)>{{ $name }}</option>
               @endforeach
             </select>
             <a href="{{ route('menus.create') }}" class="btn btn-neutral ml-auto">新規投稿</a>
@@ -71,14 +70,14 @@
                 <tr class="hover:bg-base-300">
                   <td><a href="{{ route('menus.show', $menu) }}">{{ $menu->title }}</a></td>
                   @if ($menu->user)
-                  <td>{{ $menu->user->name }}</td>
+                  <td><a href="{{ route('menus.index', ['author' => $menu->user->name]) }}">{{ $menu->user->name }}</a></td>
                   @else
                   <td>{{ __('Unknown') }}</td>
                   @endif
                   <td>
-                  @foreach ($menu->tags as $tag)
-                  <button class="btn btn-xs">{{ $tag->name }} </button>
-                  @endforeach
+                    @foreach ($menu->tags as $tag)
+                    <button class="btn btn-xs">{{ $tag->name }} </button>
+                    @endforeach
                   </td>
                 </tr>
                 @endforeach

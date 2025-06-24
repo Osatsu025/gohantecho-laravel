@@ -21,51 +21,45 @@ class MenuController extends Controller
 
     public function index(MenuIndexRequest $request) {
 
+        $this->authorize('viewAny', Menu::class);
+
         $sort_list = self::SORT_LIST;
-        
-        $query = Menu::query();
 
         $validated = $request->validated();
 
         $keyword = $validated['keyword'] ?? null;
-        if ($keyword) {
-            $query->where('title', 'like', "%{$keyword}%")
-                    ->orWhere('content', 'like', "%{$keyword}%")
-                    ->orWhereHas('user', function ($query) use ($keyword) {
-                        $query->where('users.name', 'like', "%{$keyword}%");
-                    })
-                    ->orWhereHas('tags', function($query) use ($keyword) {
-                        $query->where('tags.name', 'like', "%{$keyword}%");
-                    });
-        }
+        $author = $validated['author'] ?? null;
+        $sort_type = $validated['sort_type'] ?? array_key_first(self::SORT_LIST);
 
-        $query->with('user')->with('tags');
+        $query = Menu::query()
+            ->with(['user', 'tags'])
+            ->searchByKeyword($keyword)
+            ->filterByAuthor($author);
 
-        $sort_type = $validated['sort_type'] ?? null;
-        if ($sort_type) {
-            $column = self::SORT_LIST[$sort_type]['column'];
-            $direction = self::SORT_LIST[$sort_type]['direction'];
-            $query->orderBy($column, $direction);
-        } else {
-            $query->orderBy('created_at', 'desc');
-        }
+        $sort_column = self::SORT_LIST[$sort_type]['column'];
+        $sort_direction = self::SORT_LIST[$sort_type]['direction'];
+        $query->orderBy($sort_column, $sort_direction);
 
         $menus = $query->paginate(10);
 
         return view('menus.index', compact(
             'menus',
             'keyword',
+            'author',
             'sort_list',
             'sort_type',
         ));
     }
 
     public function create() {
+        $this->authorize('create', Menu::class);
+
         $tags = Tag::all();
         return view('menus.create', compact('tags'));
     }
 
     public function store(MenuStoreRequest $request) {
+        $this->authorize('create', Menu::class);
 
         $validated = $request->validated();
         /** @var User $user */
@@ -73,7 +67,7 @@ class MenuController extends Controller
         $menu = $user->menus()->create($validated);
         
         $tag_names_str = $validated['input_tags'] ?? '';
-        $tag_ids = self::inputTagsToArray($tag_names_str);
+        $tag_ids = Tag::findOrCreateByName($tag_names_str);
 
         $menu->tags()->attach($tag_ids);
 
@@ -83,20 +77,21 @@ class MenuController extends Controller
     }
 
     public function show(Menu $menu) {
+        $this->authorize('view', $menu);
+
         $menu->load(['user', 'tags']);
 
         return view('menus.show', compact('menu'));
     }
 
     public function edit(Menu $menu) {
-        if ($redirect = self::checkAuthentication($menu)) {
-            return $redirect;
-        }
+
+        $this->authorize('update', $menu);
 
         $menu->load(['user', 'tags']);
         $tags = Tag::all();
 
-        $input_selected_tags = self::tagsCollectionToString($menu->tags);
+        $input_selected_tags = $menu->formatted_tags;
 
         return view('menus.edit', compact(
             'menu',
@@ -106,16 +101,14 @@ class MenuController extends Controller
     }
 
     public function update(MenuStoreRequest $request, Menu $menu) {
-        if ($redirect = self::checkAuthentication($menu)) {
-            return $redirect;
-        }
+        $this->authorize('update', $menu);
 
         $validated = $request->validated();
 
         $menu->update($validated);
 
         $tag_names_str = $validated['input_tags'] ?? '';
-        $tag_ids = self::inputTagsToArray($tag_names_str);
+        $tag_ids = Tag::findOrCreateByName($tag_names_str);
 
         $menu->tags()->sync($tag_ids);
 
@@ -126,9 +119,7 @@ class MenuController extends Controller
 
     public function destroy(Menu $menu) {
 
-        if ($redirect = self::checkAuthentication($menu)) {
-            return $redirect;
-        }
+        $this->authorize('delete', $menu);
         
         $message = $menu->title . 'を削除しました';
         
@@ -137,65 +128,4 @@ class MenuController extends Controller
         return to_route('menus.index')->with('flash_message', $message);
     }
 
-
-    /**
-     * 対象のメニューへのアクセス権限をチェック
-     * 
-     * @param Menu $menu
-     * @return null|RedirectResponse 
-     */
-    private function checkAuthentication(Menu $menu): ?RedirectResponse {
-        if ($menu->user_id !== Auth::id()) {
-            $message = '不正なアクセスです';
-            return to_route('menus.index')->with('error_message', $message);
-        }
-        return null;
-    }
-
-    /**
-     * スペース区切りのタグ名が並んだ文字列から、配列を作成
-     * 
-     * @param string $tag_names_str
-     * @return int[] Tag IDs
-     */
-    private function inputTagsToArray($tag_names_str): array {
-        $tag_names = [];
-        $normalized_tag_names_str = mb_convert_kana($tag_names_str, 's');
-        if (trim($normalized_tag_names_str) !== '') {
-            $tag_names = array_unique(
-                array_filter(
-                    array_map('trim', explode(' ', $normalized_tag_names_str)),
-                    'strlen'
-                )
-            );
-        }
-        $tag_ids = [];
-
-        foreach ($tag_names as $tag_name) {
-            $tag = Tag::withTrashed()->where('name', $tag_name)->first();
-            if ($tag) {
-                if ($tag->trashed()) {
-                    $tag->restore();
-                }
-            } else {
-                $tag = Tag::create(['name' => $tag_name]);
-            }
-            $tag_ids[] = $tag->id;
-        }
-
-        return $tag_ids;
-    }
-
-    /**
-     * メニューからタグを取得しスペース区切りの文字列に変換して返す
-     * 
-     * @param EloquentCollection $selected_tags
-     * @return string
-     */
-    private function tagsCollectionToString($tags) {
-        if ($tags->isEmpty()) {
-            return '';
-        }
-        return $tags->pluck('name')->implode(' ');
-    }
 }
