@@ -35,7 +35,7 @@ class MenuStoreRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'public' => $this->has('public'),
+            'public' => $this->boolean('public'),
             'tag_ids' => $this->input('tag_ids', []),
         ]);
     } 
