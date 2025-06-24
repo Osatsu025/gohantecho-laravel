@@ -137,7 +137,7 @@ class MenuTest extends TestCase
         $other_users_menu = $this->createMenu($other_user);
         $response = $this->actingAs($this->user)
                         ->get(route('menus.edit', $other_users_menu));
-        $response->assertRedirect(route('menus.index'));
+        $response->assertForbidden();
     }
 
     public function test_guest_cannot_update_menus()
@@ -174,7 +174,7 @@ class MenuTest extends TestCase
         $original_other_menu_data = $other_users_menu->only(['title', 'content', 'public', 'user_id']);
         $response = $this->actingAs($this->user)
                         ->patch(route('menus.update', $other_users_menu), $this->new_menu_data);
-        $response->assertRedirect(route('menus.index'));
+        $response->assertForbidden();
         $this->assertDatabaseMissing('menus', $this->new_menu_data);
         $this->assertDatabaseHas('menus', $original_other_menu_data);
     }
@@ -205,7 +205,7 @@ class MenuTest extends TestCase
         $other_users_menu = $this->createMenu($other_user);
         $response = $this->actingAs($this->user)
                         ->delete(route('menus.destroy', $other_users_menu));
-        $response->assertRedirect(route('menus.index'));
+        $response->assertForbidden();
         $this->assertDatabaseHas('menus', [
             'id' => $other_users_menu->id,
         ]);
