@@ -28,8 +28,10 @@
               @else
               <h2 class="text-1 mr-auto">{{ __('Unknown') }}</h2>
               @endif
-              @if ($menu->user == Auth::user())
+              @can('update', $menu)
               <a role="button" class="btn mr-2" href="{{ route('menus.edit', $menu) }}">{{ __('Edit') }}</a>
+              @endcan
+              @can('delete', $menu)
               <button class="btn btn-error" onclick="delete_modal.showModal()">{{ __('Delete') }}</button>
               <dialog id="delete_modal" class="modal">
                 <div class="modal-box">
@@ -46,7 +48,7 @@
                   </div>
                 </div>
               </dialog>
-              @endif
+              @endcan
             </div>
             <p class="mb-4">{!! nl2br(e($menu->content)) !!}</p>
             <div>

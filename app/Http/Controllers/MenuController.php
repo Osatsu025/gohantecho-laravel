@@ -78,9 +78,8 @@ class MenuController extends Controller
     }
 
     public function edit(Menu $menu) {
-        if ($redirect = self::checkAuthentication($menu)) {
-            return $redirect;
-        }
+
+        $this->authorize('update', $menu);
 
         $menu->load(['user', 'tags']);
         $tags = Tag::all();
@@ -95,9 +94,7 @@ class MenuController extends Controller
     }
 
     public function update(MenuStoreRequest $request, Menu $menu) {
-        if ($redirect = self::checkAuthentication($menu)) {
-            return $redirect;
-        }
+        $this->authorize('update', $menu);
 
         $validated = $request->validated();
 
@@ -115,30 +112,13 @@ class MenuController extends Controller
 
     public function destroy(Menu $menu) {
 
-        if ($redirect = self::checkAuthentication($menu)) {
-            return $redirect;
-        }
+        $this->authorize('delete', $menu);
         
         $message = $menu->title . 'を削除しました';
         
         $menu->delete();
 
         return to_route('menus.index')->with('flash_message', $message);
-    }
-
-
-    /**
-     * 対象のメニューへのアクセス権限をチェック
-     * 
-     * @param Menu $menu
-     * @return null|RedirectResponse 
-     */
-    private function checkAuthentication(Menu $menu): ?RedirectResponse {
-        if ($menu->user_id !== Auth::id()) {
-            $message = '不正なアクセスです';
-            return to_route('menus.index')->with('error_message', $message);
-        }
-        return null;
     }
 
 }
