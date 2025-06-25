@@ -44,7 +44,7 @@
                       id="tag_{{ $tag->id }}"
                       name="tag_ids[]"
                       onchange="add_tag('{{ json_encode($tag, JSON_HEX_APOS | JSON_HEX_QUOT) }}', this)"
-                      {{ is_array(old('tag_ids')) && in_array($tag->id, old("tag_ids")) ? 'checked' : '' }}
+                      @checked( is_array(old('tag_ids')) && in_array($tag->id, old("tag_ids")) )
                     />
                   @endforeach
                 </div>
