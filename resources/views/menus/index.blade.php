@@ -77,7 +77,7 @@
                   />
                 @endforeach
                 <div class="modal-action">
-                  <button class="btn">この条件で絞り込む</button>
+                  <button class="btn" form="search_form" type="submit">この条件で絞り込む</button>
                 </div>
               </div>
             </dialog>
