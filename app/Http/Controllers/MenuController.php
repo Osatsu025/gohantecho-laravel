@@ -52,6 +52,7 @@ class MenuController extends Controller
             'menus',
             'keyword',
             'author',
+            'tag_ids',
             'sort_list',
             'sort_type',
             'tags',
