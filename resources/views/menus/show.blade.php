@@ -54,7 +54,7 @@
             <div>
               <p>タグ</p>
               @foreach ($menu->tags as $tag)
-              <button class="btn btn-xs">{{ $tag->name }}</button>
+              <a href="{{ route('menus.index', ['tag_id' => $tag->id]) }}" role="button" class="btn btn-xs">{{ $tag->name }}</a>
               @endforeach 
             </div>
           </div>
