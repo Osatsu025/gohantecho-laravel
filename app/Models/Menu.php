@@ -92,6 +92,29 @@ class Menu extends Model
         });
     }
 
+    /** 
+     * 絞り込みボタンから選択されたタグで絞り込み検索をするスコープ
+     *  
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string|null
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByTagIds($query, $tag_ids)
+    {
+        if (empty($tag_ids)) {
+            return $query;
+        }
+
+        $filter_query = $query;
+        foreach ($tag_ids as $tag_id) {
+            $filter_query = $filter_query->whereHas('tags', function ($q) use ($tag_id) {
+                $q->where('tags.id', $tag_id);
+            });
+        }
+
+        return $filter_query;
+    }
+
     /**
      * 関連付けられたタグをスペース区切りの文字列として取得するアクセサ
      * 

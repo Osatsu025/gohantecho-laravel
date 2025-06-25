@@ -30,31 +30,58 @@
           </div>
           @endif
 
-          <form action="{{ route('menus.index') }}" id="search_form" class="flex">
-            @if ($author)
-            <input type="hidden" name="author" value="{{ $author }}">
-            @endif
-            <label class="input">
-              <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <g
-                  stroke-linejoin="round"
-                  stroke-linecap="round"
-                  stroke-width="2.5"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <path d="m21 21-4.3-4.3"></path>
-                </g>
-              </svg>
-              <input type="text" class="grow" placeholder="{{ __('search')}}" name="keyword" value="{{ $keyword }}" />
-            </label>
+          <form action="{{ route('menus.index') }}" id="search_form">
+            <div class="flex mb-2">
+              @if ($author)
+              <input type="hidden" name="author" value="{{ $author }}">
+              @endif
+              <label class="input">
+                <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <g
+                    stroke-linejoin="round"
+                    stroke-linecap="round"
+                    stroke-width="2.5"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.3-4.3"></path>
+                  </g>
+                </svg>
+                <input type="text" class="grow" placeholder="{{ __('search')}}" name="keyword" value="{{ $keyword }}" />
+              </label>
+              <a href="{{ route('menus.create') }}" class="btn btn-neutral ml-auto">新規投稿</a>
+            </div>
             <select class="select select-sm w-auto" name="sort_type" id="sort_type" onchange="document.getElementById('search_form').submit();">
               @foreach ($sort_list as $name => $details)
                 <option value="{{ $name }}" @selected($sort_type === $name)>{{ $name }}</option>
               @endforeach
             </select>
-            <a href="{{ route('menus.create') }}" class="btn btn-neutral ml-auto">新規投稿</a>
+            <button type="button" class="btn btn-sm" onclick="filter_modal.showModal()">絞り込み</button>
+            <dialog id="filter_modal" class="modal">
+              <div class="modal-box">
+                <form method="dialog">
+                  <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                </form>
+                <h3 class="text-lg font-bold mb-4">絞り込み検索</h3>
+                @foreach($tags as $tag)
+                  <input
+                    type="checkbox"
+                    aria-label="{{ $tag->name }}"
+                    class="btn btn-xs mr-2 mb-2 tag-checkbox-selector"
+                    data-tag-name="{{ $tag->name }}"
+                    value="{{ $tag->id }}"
+                    id="tag_{{ $tag->id }}"
+                    name="tag_ids[]"
+                    onchange="add_tag('{{ json_encode($tag, JSON_HEX_APOS | JSON_HEX_QUOT) }}', this)"
+                    {{ is_array(old('tag_ids')) && in_array($tag->id, old("tag_ids")) ? 'checked' : '' }}
+                  />
+                @endforeach
+                <div class="modal-action">
+                  <button class="btn">この条件で絞り込む</button>
+                </div>
+              </div>
+            </dialog>
           </form>
 
             <table class="table mb-4">

@@ -31,12 +31,14 @@ class MenuController extends Controller
         $author = $validated['author'] ?? null;
         $tag_id = $validated['tag_id'] ?? null;
         $sort_type = $validated['sort_type'] ?? array_key_first(self::SORT_LIST);
+        $tag_ids = $validated['tag_ids'] ?? null;
 
         $query = Menu::query()
             ->with(['user', 'tags'])
             ->searchByKeyword($keyword)
             ->filterByAuthor($author)
-            ->filterByTagId($tag_id);
+            ->filterByTagId($tag_id)
+            ->filterByTagIds($tag_ids);
 
         $sort_column = self::SORT_LIST[$sort_type]['column'];
         $sort_direction = self::SORT_LIST[$sort_type]['direction'];
@@ -44,12 +46,15 @@ class MenuController extends Controller
 
         $menus = $query->paginate(10);
 
+        $tags = Tag::all();
+
         return view('menus.index', compact(
             'menus',
             'keyword',
             'author',
             'sort_list',
             'sort_type',
+            'tags',
         ));
     }
 
