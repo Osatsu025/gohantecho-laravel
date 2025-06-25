@@ -57,7 +57,7 @@
                 <option value="{{ $name }}" @selected($sort_type === $name)>{{ $name }}</option>
               @endforeach
             </select>
-            <button type="button" class="btn btn-sm" onclick="filter_modal.showModal()">絞り込み</button>
+            <button type="button" class="btn btn-sm @if($tag_ids) btn-primary @endif" onclick="filter_modal.showModal()">絞り込み</button>
             <dialog id="filter_modal" class="modal">
               <div class="modal-box">
                 <form method="dialog">
