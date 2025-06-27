@@ -94,7 +94,7 @@
               <tbody>
                 @foreach ($menus as $menu)
                 <tr class="hover:bg-base-300">
-                  <td><a href="{{ route('menus.show', $menu) }}">{{ $menu->title }}</a></td>
+                  <td><a href="{{ route('menus.show', array_merge(['menu' => $menu], request()->query())) }}">{{ $menu->title }}</a></td>
                   @if ($menu->user)
                   <td><a href="{{ route('menus.index', ['author' => $menu->user->name]) }}">{{ $menu->user->name }}</a></td>
                   @else
