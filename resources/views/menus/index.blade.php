@@ -102,7 +102,12 @@
                   @endif
                   <td>
                     @foreach ($menu->tags as $tag)
-                    <a href="{{ route('menus.index', ['tag_id' => $tag->id]) }}" role="button" class="btn btn-xs">{{ $tag->name }} </button>
+                    <a href="{{ route('menus.index', array_merge(
+                      request()->query(), [
+                        'tag_ids' => array_unique(array_merge(request()->query('tag_ids', []), [$tag->id])),
+                        'page' => 1
+                        ])) }}"
+                      role="button" class="btn btn-xs">{{ $tag->name }}</a>
                     @endforeach
                   </td>
                 </tr>

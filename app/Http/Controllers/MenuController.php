@@ -29,15 +29,17 @@ class MenuController extends Controller
 
         $keyword = $validated['keyword'] ?? null;
         $author = $validated['author'] ?? null;
-        $tag_id = $validated['tag_id'] ?? null;
         $sort_type = $validated['sort_type'] ?? array_key_first(self::SORT_LIST);
-        $tag_ids = $validated['tag_ids'] ?? null;
+        $tag_ids = $validated['tag_ids'] ?? [];
+        $tag_id = $validated['tag_id'] ?? null;
+        if ($tag_id && !in_array($tag_id, $tag_ids)) {
+            $tag_ids[] = $tag_id;
+        }
 
         $query = Menu::query()
             ->with(['user', 'tags'])
             ->searchByKeyword($keyword)
             ->filterByAuthor($author)
-            ->filterByTagId($tag_id)
             ->filterByTagIds($tag_ids);
 
         $sort_column = self::SORT_LIST[$sort_type]['column'];

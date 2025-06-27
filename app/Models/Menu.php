@@ -74,24 +74,6 @@ class Menu extends Model
         });
     }
 
-    /**
-     * タグでメニューを絞り込むスコープ
-     * 
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string|null
-     * @return \Illuminate\Database\Eloquent\Builder
-     */
-    public function scopeFilterByTagId($query, $tag_id)
-    {
-        if (empty($tag_id)) {
-            return $query;
-        }
-
-        return $query->whereHas('tags', function($q) use ($tag_id) {
-            $q->where('tags.id', $tag_id);
-        });
-    }
-
     /** 
      * 絞り込みボタンから選択されたタグで絞り込み検索をするスコープ
      *  
