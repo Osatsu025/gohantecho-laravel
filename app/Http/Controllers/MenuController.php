@@ -10,6 +10,8 @@ use App\Models\Tag;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 
+use function PHPSTORM_META\map;
+
 class MenuController extends Controller
 {
     public const SORT_LIST = [
@@ -36,6 +38,11 @@ class MenuController extends Controller
             $tag_ids[] = $tag_id;
         }
 
+        $selected_tag_names = [];
+        if (!empty($tag_ids)) {
+            $selected_tag_names = Tag::whereIn('id', $tag_ids)->pluck('name')->toArray();
+        }
+
         $query = Menu::query()
             ->with(['user', 'tags'])
             ->searchByKeyword($keyword)
@@ -55,6 +62,7 @@ class MenuController extends Controller
             'keyword',
             'author',
             'tag_ids',
+            'selected_tag_names',
             'sort_list',
             'sort_type',
             'tags',

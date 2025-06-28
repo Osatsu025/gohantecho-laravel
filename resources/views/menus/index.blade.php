@@ -30,7 +30,7 @@
           </div>
           @endif
 
-          <form action="{{ route('menus.index') }}" id="search_form">
+          <form action="{{ route('menus.index') }}" id="search_form" class="mb-4">
             <div class="flex mb-2">
               @if ($author)
               <input type="hidden" name="author" value="{{ $author }}">
@@ -82,6 +82,18 @@
               </div>
             </dialog>
           </form>
+
+          <h3 class="text-lg">
+            @if (!empty($author) || !empty($selected_tag_names))
+              <span class="text-base-content/70">絞り込み条件： </span>
+            @endif
+            @if (!empty($author))
+              {{ $author . ' ' }}
+            @endif
+            @if (!empty($selected_tag_names))
+              {{ implode(' ', $selected_tag_names) . ' ' }}
+            @endif
+          </h3>
 
             <table class="table mb-4">
               <thead>
