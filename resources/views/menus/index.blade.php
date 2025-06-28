@@ -63,7 +63,10 @@
                 <form method="dialog">
                   <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
                 </form>
-                <h3 class="text-lg font-bold mb-4">絞り込み検索</h3>
+                <div class="flex justify-around mb-4">
+                  <h3 class="text-lg font-bold">絞り込み検索</h3>
+                  <button type="button" id="reset_filter_button" class="btn">リセット</button>
+                </div>
                 @foreach($tags as $tag)
                   <input
                     type="checkbox"
@@ -77,7 +80,7 @@
                   />
                 @endforeach
                 <div class="modal-action">
-                  <button class="btn" form="search_form" type="submit">この条件で絞り込む</button>
+                  <button class="btn btn-primary" form="search_form" type="submit">この条件で絞り込む</button>
                 </div>
               </div>
             </dialog>
@@ -146,3 +149,30 @@
     </div>
   </div>
 </x-app-layout>
+
+<script>
+  // DOMが完全に読み込まれた後にスクリプト実行
+  document.addEventListener('DOMContentLoaded', function() {
+    const resetButton = document.getElementById('reset_filter_button');
+    const checkboxes = document.querySelectorAll('#filter_modal .tag-checkbox-selector');
+
+    function updateResetButtonState() {
+      const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+        if (isAnyChecked) {
+          resetButton.classList.add('btn-neutral');
+        } else {
+          resetButton.classList.remove('btn-neutral');
+        }
+    }
+
+    resetButton.addEventListener('click', function() {
+      checkboxes.forEach(checkbox => checkbox.checked = false);
+      updateResetButtonState();
+    })
+
+    checkboxes.forEach(checkbox => checkbox.addEventListener('change', updateResetButtonState));
+
+    updateResetButtonState();
+
+  });
+</script>
