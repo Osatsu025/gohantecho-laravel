@@ -107,6 +107,13 @@
                 </tr>
               </thead>
               <tbody>
+                @php
+                    $current_tag_ids_from_query = request()->query('tag_ids', []);
+                    if (!is_array($current_tag_ids_from_query)) {
+                      $current_tag_ids_from_query = [$current_tag_ids_from_query];
+                    }
+                    $current_tag_ids_from_query = array_map('intval', $current_tag_ids_from_query);
+                @endphp
                 @foreach ($menus as $menu)
                 <tr class="hover:bg-base-300">
                   <td><a href="{{ route('menus.show', array_merge(['menu' => $menu], request()->query())) }}">{{ $menu->title }}</a></td>
@@ -118,12 +125,6 @@
                   <td>
                     @foreach ($menu->tags as $tag)
                       @php
-                        $current_tag_ids_from_query = request()->query('tag_ids', []);
-                        if (!is_array($current_tag_ids_from_query)) {
-                          $current_tag_ids_from_query = [$current_tag_ids_from_query];
-                        }
-                        $current_tag_ids_from_query = array_map('intval', $current_tag_ids_from_query);
-
                         $is_active_tag = in_array($tag->id, $current_tag_ids_from_query);
 
                         if ($is_active_tag) {
