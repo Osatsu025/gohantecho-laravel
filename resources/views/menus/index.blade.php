@@ -114,12 +114,23 @@
                   @endif
                   <td>
                     @foreach ($menu->tags as $tag)
-                    <a href="{{ route('menus.index', array_merge(
-                      request()->query(), [
-                        'tag_ids' => array_unique(array_merge(request()->query('tag_ids', []), [$tag->id])),
-                        'page' => 1
-                        ])) }}"
-                      role="button" class="btn btn-xs">{{ $tag->name }}</a>
+                      @php
+                        $current_tag_ids_from_query = request()->query('tag_ids', []);
+                        if (!is_array($current_tag_ids_from_query)) {
+                          $current_tag_ids_from_query = [$current_tag_ids_from_query];
+                        }
+                        $current_tag_ids_from_query = array_map('intval', $current_tag_ids_from_query);
+
+                        $is_active_tag = in_array($tag->id, $current_tag_ids_from_query);
+
+                        if ($is_active_tag) {
+                          $new_tag_ids = array_values(array_filter($current_tag_ids_from_query, fn($id) => $id != $tag->id));
+                        } else {
+                          $new_tag_ids = array_values(array_unique(array_merge($current_tag_ids_from_query, [$tag->id])));
+                        }
+                      @endphp
+                      <a href="{{ route('menus.index', array_merge(request()->query(), ['tag_ids' => $new_tag_ids, 'page' => 1])) }}"
+                        role="button" class="btn btn-xs @if($is_active_tag) btn-soft btn-primary @endif">{{ $tag->name }}</a>
                     @endforeach
                   </td>
                 </tr>
