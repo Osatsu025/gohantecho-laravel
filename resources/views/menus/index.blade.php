@@ -57,17 +57,17 @@
                 新規投稿
               </a>
             </div>
-            <select class="select select-sm w-auto" name="sort_type" id="sort_type" onchange="document.getElementById('search_form').submit();">
-              @foreach ($sort_list as $name => $details)
-                <option value="{{ $name }}" @selected($sort_type === $name)>{{ $name }}</option>
-              @endforeach
-            </select>
             <button type="button" class="btn btn-sm @if($tag_ids) btn-primary @endif" onclick="filter_modal.showModal()">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1.5A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 2.808V2h-11z"/>
               </svg>
               <span class="hidden sm:inline ml-1">絞り込み</span>
             </button>
+            <select class="select select-sm w-auto" name="sort_type" id="sort_type" onchange="document.getElementById('search_form').submit();">
+              @foreach ($sort_list as $name => $details)
+                <option value="{{ $name }}" @selected($sort_type === $name)>{{ $name }}</option>
+              @endforeach
+            </select>
             <dialog id="filter_modal" class="modal">
               <div class="modal-box">
                 <form method="dialog">
