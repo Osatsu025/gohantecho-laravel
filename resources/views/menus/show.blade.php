@@ -24,7 +24,7 @@
             <div class="flex items-center mb-4">
               <h1 class="text-2xl mr-10">{{ $menu->title }}</h1>
               @if ($menu->user)
-              <a href="{{ route('menus.index', array_merge(request()->query(), ['author' => $menu->user->name, 'page' => 1])) }}" class="text-l mr-auto">{{ $menu->user->name }}</a>
+              <a href="{{ query_route('menus.index', ['author' => $menu->user->name, 'page' => 1]) }}" class="text-l mr-auto">{{ $menu->user->name }}</a>
               @else
               <h2 class="text-1 mr-auto">{{ __('Unknown') }}</h2>
               @endif
@@ -64,7 +64,7 @@
             <div>
               <p>タグ</p>
               @foreach ($menu->tags as $tag)
-              <a href="{{ route('menus.index', array_merge(request()->query(), ['tag_id' => $tag->id, 'page' => 1])) }}" role="button" class="btn btn-xs">{{ $tag->name }}</a>
+              <a href="{{ query_route('menus.index', ['tag_id' => $tag->id, 'page' => 1]) }}" role="button" class="btn btn-xs">{{ $tag->name }}</a>
               @endforeach 
             </div>
           </div>

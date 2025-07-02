@@ -117,7 +117,7 @@
               </h3>
               @endif
               @if (!empty($author))
-                <a role="button" href="{{ route('menus.index', array_merge(request()->except('author'), ['page' => 1])) }}" class="btn btn-sm btn-soft btn-primary">
+                <a role="button" href="{{ query_route('menus.index', ['page' => 1], 'author') }}" class="btn btn-sm btn-soft btn-primary">
                   {{ $author }}
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
                     <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
@@ -133,7 +133,7 @@
                   @php
                     $new_tag_ids = array_values(array_filter($tag_ids, fn($id) => $id != $selected_tag->id));
                   @endphp
-                  <a role="button" href="{{ route('menus.index', array_merge(request()->query(), ['tag_ids' => $new_tag_ids, 'page' => 1])) }}" class="btn btn-sm btn-soft btn-primary">
+                  <a role="button" href="{{ query_route('menus.index', ['tag_ids' => $new_tag_ids, 'page' => 1]) }}" class="btn btn-sm btn-soft btn-primary">
                     {{ $selected_tag->name }}
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
                       <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
@@ -155,9 +155,9 @@
               <tbody>
                 @foreach ($menus as $menu)
                 <tr class="hover:bg-base-300">
-                  <td><a href="{{ route('menus.show', array_merge(request()->query(), ['menu' => $menu])) }}">{{ $menu->title }}</a></td>
+                  <td><a href="{{ query_route('menus.show', ['menu' => $menu]) }}">{{ $menu->title }}</a></td>
                   @if ($menu->user)
-                  <td><a href="{{ route('menus.index', array_merge(request()->query(), ['author' => $menu->user->name, 'page' => 1])) }}">{{ $menu->user->name }}</a></td>
+                  <td><a href="{{ query_route('menus.index', ['author' => $menu->user->name, 'page' => 1]) }}">{{ $menu->user->name }}</a></td>
                   @else
                   <td>{{ __('Unknown') }}</td>
                   @endif
@@ -172,7 +172,7 @@
                           $new_tag_ids = array_values(array_unique(array_merge($tag_ids, [$tag->id])));
                         }
                       @endphp
-                      <a href="{{ route('menus.index', array_merge(request()->query(), ['tag_ids' => $new_tag_ids, 'page' => 1])) }}"
+                      <a href="{{ query_route('menus.index', ['tag_ids' => $new_tag_ids, 'page' => 1]) }}"
                         role="button" class="btn btn-xs @if($is_active_tag) btn-soft btn-primary @endif">{{ $tag->name }}</a>
                     @endforeach
                   </td>
