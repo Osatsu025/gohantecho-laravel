@@ -83,18 +83,21 @@
                     リセット
                   </button>
                 </div>
-                @foreach($tags as $tag)
-                  <input
-                    type="checkbox"
-                    aria-label="{{ $tag->name }}"
-                    class="btn btn-xs mr-2 mb-2 tag-checkbox-selector"
-                    data-tag-name="{{ $tag->name }}"
-                    value="{{ $tag->id }}"
-                    id="tag_{{ $tag->id }}"
-                    name="tag_ids[]"
-                    @checked( is_array($tag_ids) && in_array($tag->id, $tag_ids)) )
-                  />
-                @endforeach
+                <div class="mb-2">
+                  <h4 class="text-base font-bold mb-2">タグ</h4>
+                  @foreach($tags as $tag)
+                    <input
+                      type="checkbox"
+                      aria-label="{{ $tag->name }}"
+                      class="btn btn-xs mr-2 mb-2 tag-checkbox-selector"
+                      data-tag-name="{{ $tag->name }}"
+                      value="{{ $tag->id }}"
+                      id="tag_{{ $tag->id }}"
+                      name="tag_ids[]"
+                      @checked( is_array($tag_ids) && in_array($tag->id, $tag_ids)) )
+                    />
+                  @endforeach
+                </div>
                 <div class="modal-action">
                   <button class="btn btn-primary" form="search_form" type="submit">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -107,17 +110,39 @@
             </dialog>
           </form>
 
-          <h3 class="text-lg">
-            @if (!empty($author) || !empty($selected_tag_names))
-              <span class="text-base-content/70">絞り込み条件： </span>
-            @endif
-            @if (!empty($author))
-              {{ $author . ' ' }}
-            @endif
-            @if (!empty($selected_tag_names))
-              {{ implode(' ', $selected_tag_names) . ' ' }}
-            @endif
-          </h3>
+            @if (!empty($author) || !empty($tag_ids))
+            <div class="flex items-center gap-2 flex-wrap mb-4">
+              <h3 class="text-lg font-semibold text-base-content/70">
+                絞り込み条件：
+              </h3>
+              @endif
+              @if (!empty($author))
+                <a role="button" href="{{ route('menus.index', array_merge(request()->except('author'), ['page' => 1])) }}" class="btn btn-sm btn-soft btn-primary">
+                  {{ $author }}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                  </svg>
+                </a>
+              @endif
+              @if (!empty($tag_ids))
+                @php
+                $selected_tags = $tags->whereIn('id', $tag_ids);
+                @endphp
+                @foreach ($selected_tags as $selected_tag)
+                  @php
+                    $new_tag_ids = array_values(array_filter($tag_ids, fn($id) => $id != $selected_tag->id));
+                  @endphp
+                  <a role="button" href="{{ route('menus.index', array_merge(request()->query(), ['tag_ids' => $new_tag_ids, 'page' => 1])) }}" class="btn btn-sm btn-soft btn-primary">
+                    {{ $selected_tag->name }}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                      <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                    </svg>
+                  </a>  
+                @endforeach
+              @endif
+          </div>
 
             <table class="table mb-4">
               <thead>
@@ -128,30 +153,23 @@
                 </tr>
               </thead>
               <tbody>
-                @php
-                    $current_tag_ids_from_query = request()->query('tag_ids', []);
-                    if (!is_array($current_tag_ids_from_query)) {
-                      $current_tag_ids_from_query = [$current_tag_ids_from_query];
-                    }
-                    $current_tag_ids_from_query = array_map('intval', $current_tag_ids_from_query);
-                @endphp
                 @foreach ($menus as $menu)
                 <tr class="hover:bg-base-300">
-                  <td><a href="{{ route('menus.show', array_merge(['menu' => $menu], request()->query())) }}">{{ $menu->title }}</a></td>
+                  <td><a href="{{ route('menus.show', array_merge(request()->query(), ['menu' => $menu])) }}">{{ $menu->title }}</a></td>
                   @if ($menu->user)
-                  <td><a href="{{ route('menus.index', ['author' => $menu->user->name]) }}">{{ $menu->user->name }}</a></td>
+                  <td><a href="{{ route('menus.index', array_merge(request()->query(), ['author' => $menu->user->name])) }}">{{ $menu->user->name }}</a></td>
                   @else
                   <td>{{ __('Unknown') }}</td>
                   @endif
                   <td>
                     @foreach ($menu->tags as $tag)
                       @php
-                        $is_active_tag = in_array($tag->id, $current_tag_ids_from_query);
+                        $is_active_tag = in_array($tag->id, $tag_ids);
 
                         if ($is_active_tag) {
-                          $new_tag_ids = array_values(array_filter($current_tag_ids_from_query, fn($id) => $id != $tag->id));
+                          $new_tag_ids = array_values(array_filter($tag_ids, fn($id) => $id != $tag->id));
                         } else {
-                          $new_tag_ids = array_values(array_unique(array_merge($current_tag_ids_from_query, [$tag->id])));
+                          $new_tag_ids = array_values(array_unique(array_merge($tag_ids, [$tag->id])));
                         }
                       @endphp
                       <a href="{{ route('menus.index', array_merge(request()->query(), ['tag_ids' => $new_tag_ids, 'page' => 1])) }}"
