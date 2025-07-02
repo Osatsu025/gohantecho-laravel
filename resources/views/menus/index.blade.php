@@ -126,9 +126,6 @@
                 </a>
               @endif
               @if (!empty($tag_ids))
-                @php
-                $selected_tags = $tags->whereIn('id', $tag_ids);
-                @endphp
                 @foreach ($selected_tags as $selected_tag)
                   @php
                     $new_tag_ids = array_values(array_filter($tag_ids, fn($id) => $id != $selected_tag->id));

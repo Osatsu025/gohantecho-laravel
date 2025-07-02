@@ -33,10 +33,9 @@ class MenuController extends Controller
         $author = $validated['author'] ?? null;
         $sort_type = $validated['sort_type'] ?? array_key_first(self::SORT_LIST);
         $tag_ids = $validated['tag_ids'] ?? [];
-
-        $selected_tag_names = [];
+        $selected_tags = collect();
         if (!empty($tag_ids)) {
-            $selected_tag_names = Tag::whereIn('id', $tag_ids)->pluck('name')->toArray();
+            $selected_tags = Tag::whereIn('id', $tag_ids)->get();
         }
 
         $query = Menu::query()
@@ -58,7 +57,7 @@ class MenuController extends Controller
             'keyword',
             'author',
             'tag_ids',
-            'selected_tag_names',
+            'selected_tags',
             'sort_list',
             'sort_type',
             'tags',
