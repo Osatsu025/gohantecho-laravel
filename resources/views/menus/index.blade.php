@@ -30,32 +30,119 @@
           </div>
           @endif
 
-          <form action="{{ route('menus.index') }}" id="search_form" class="flex">
-            @if ($author)
-            <input type="hidden" name="author" value="{{ $author }}">
-            @endif
-            <label class="input">
-              <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <g
-                  stroke-linejoin="round"
-                  stroke-linecap="round"
-                  stroke-width="2.5"
-                  fill="none"
-                  stroke="currentColor"
-                >
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <path d="m21 21-4.3-4.3"></path>
-                </g>
+          <form action="{{ route('menus.index') }}" id="search_form" class="mb-4">
+            <div class="flex mb-2">
+              @if ($author)
+              <input type="hidden" name="author" value="{{ $author }}">
+              @endif
+              <label class="input">
+                <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <g
+                    stroke-linejoin="round"
+                    stroke-linecap="round"
+                    stroke-width="2.5"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.3-4.3"></path>
+                  </g>
+                </svg>
+                <input type="text" class="grow" placeholder="{{ __('search')}}" name="keyword" value="{{ $keyword }}" />
+              </label>
+              <a href="{{ route('menus.create') }}" class="btn btn-neutral ml-auto">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                  <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325"/>
+                </svg>
+                新規投稿
+              </a>
+            </div>
+            <button type="button" class="btn btn-sm @if($tag_ids) btn-primary @endif" onclick="filter_modal.showModal()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1.5A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 2.808V2h-11z"/>
               </svg>
-              <input type="text" class="grow" placeholder="{{ __('search')}}" name="keyword" value="{{ $keyword }}" />
-            </label>
+              <span class="hidden sm:inline ml-1">絞り込み</span>
+            </button>
             <select class="select select-sm w-auto" name="sort_type" id="sort_type" onchange="document.getElementById('search_form').submit();">
               @foreach ($sort_list as $name => $details)
                 <option value="{{ $name }}" @selected($sort_type === $name)>{{ $name }}</option>
               @endforeach
             </select>
-            <a href="{{ route('menus.create') }}" class="btn btn-neutral ml-auto">新規投稿</a>
+            <dialog id="filter_modal" class="modal">
+              <div class="modal-box">
+                <form method="dialog">
+                  <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                </form>
+                <div class="flex justify-around mb-4">
+                  <h3 class="text-lg font-bold">絞り込み検索</h3>
+                  <button type="button" id="reset_filter_button" class="btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16">
+                      <path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41m-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9"/>
+                      <path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5 5 0 0 0 8 3M3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9z"/>
+                    </svg>  
+                    リセット
+                  </button>
+                </div>
+                <div class="mb-2">
+                  <h4 class="text-base font-bold mb-2">タグ</h4>
+                  @foreach($tags as $tag)
+                    <input
+                      type="checkbox"
+                      aria-label="{{ $tag->name }}"
+                      class="btn btn-xs mr-2 mb-2 tag-checkbox-selector"
+                      data-tag-name="{{ $tag->name }}"
+                      value="{{ $tag->id }}"
+                      id="tag_{{ $tag->id }}"
+                      name="tag_ids[]"
+                      @checked( is_array($tag_ids) && in_array($tag->id, $tag_ids)) )
+                    />
+                  @endforeach
+                </div>
+                <div class="modal-action">
+                  <button class="btn btn-primary" form="search_form" type="submit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                      <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                    </svg>
+                    検索
+                  </button>
+                </div>
+              </div>
+            </dialog>
           </form>
+
+            @if (!empty($author) || !empty($tag_ids))
+            <div class="flex items-center gap-2 flex-wrap mb-4">
+              <h3 class="text-lg font-semibold text-base-content/70">
+                絞り込み条件：
+              </h3>
+              @endif
+              @if (!empty($author))
+                <a role="button" href="{{ query_route('menus.index', ['page' => 1], 'author') }}" class="btn btn-sm btn-soft btn-primary">
+                  {{ $author }}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                  </svg>
+                </a>
+              @endif
+              @if (!empty($tag_ids))
+                @php
+                $selected_tags = $tags->whereIn('id', $tag_ids);
+                @endphp
+                @foreach ($selected_tags as $selected_tag)
+                  @php
+                    $new_tag_ids = array_values(array_filter($tag_ids, fn($id) => $id != $selected_tag->id));
+                  @endphp
+                  <a role="button" href="{{ query_route('menus.index', ['tag_ids' => $new_tag_ids, 'page' => 1]) }}" class="btn btn-sm btn-soft btn-primary">
+                    {{ $selected_tag->name }}
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                      <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                      <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                    </svg>
+                  </a>  
+                @endforeach
+              @endif
+          </div>
 
             <table class="table mb-4">
               <thead>
@@ -68,15 +155,25 @@
               <tbody>
                 @foreach ($menus as $menu)
                 <tr class="hover:bg-base-300">
-                  <td><a href="{{ route('menus.show', $menu) }}">{{ $menu->title }}</a></td>
+                  <td><a href="{{ query_route('menus.show', ['menu' => $menu]) }}">{{ $menu->title }}</a></td>
                   @if ($menu->user)
-                  <td><a href="{{ route('menus.index', ['author' => $menu->user->name]) }}">{{ $menu->user->name }}</a></td>
+                  <td><a href="{{ query_route('menus.index', ['author' => $menu->user->name, 'page' => 1]) }}">{{ $menu->user->name }}</a></td>
                   @else
                   <td>{{ __('Unknown') }}</td>
                   @endif
                   <td>
                     @foreach ($menu->tags as $tag)
-                    <button class="btn btn-xs">{{ $tag->name }} </button>
+                      @php
+                        $is_active_tag = in_array($tag->id, $tag_ids);
+
+                        if ($is_active_tag) {
+                          $new_tag_ids = array_values(array_filter($tag_ids, fn($id) => $id != $tag->id));
+                        } else {
+                          $new_tag_ids = array_values(array_unique(array_merge($tag_ids, [$tag->id])));
+                        }
+                      @endphp
+                      <a href="{{ query_route('menus.index', ['tag_ids' => $new_tag_ids, 'page' => 1]) }}"
+                        role="button" class="btn btn-xs @if($is_active_tag) btn-soft btn-primary @endif">{{ $tag->name }}</a>
                     @endforeach
                   </td>
                 </tr>
@@ -92,3 +189,30 @@
     </div>
   </div>
 </x-app-layout>
+
+<script>
+  // DOMが完全に読み込まれた後にスクリプト実行
+  document.addEventListener('DOMContentLoaded', function() {
+    const resetButton = document.getElementById('reset_filter_button');
+    const checkboxes = document.querySelectorAll('#filter_modal .tag-checkbox-selector');
+
+    function updateResetButtonState() {
+      const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+        if (isAnyChecked) {
+          resetButton.classList.add('btn-neutral');
+        } else {
+          resetButton.classList.remove('btn-neutral');
+        }
+    }
+
+    resetButton.addEventListener('click', function() {
+      checkboxes.forEach(checkbox => checkbox.checked = false);
+      updateResetButtonState();
+    })
+
+    checkboxes.forEach(checkbox => checkbox.addEventListener('change', updateResetButtonState));
+
+    updateResetButtonState();
+
+  });
+</script>

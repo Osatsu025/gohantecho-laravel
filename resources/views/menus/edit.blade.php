@@ -33,7 +33,7 @@
                   <p class="text-error-content">{{ $message }}</p>
                 @enderror
                 <label for="tag_input">タグ</label>
-                <input type="text" class="input input-xs" id="tag_input" name="input_tags" value="{{ old('$input_tags') ?? $menu->formatted_tags }}" placeholder="下から選択するか、半角スペースで区切って入力">
+                <input type="text" class="input input-xs" id="tag_input" name="input_tags" value="{{ old('input_tags') ?? $menu->formatted_tags }}" placeholder="下から選択するか、半角スペースで区切って入力">
                 <div id="tag_div">
                   @foreach ($tags as $tag)
                     <input
@@ -45,7 +45,7 @@
                       id="tag_{{ $tag->id }}"
                       name="tag_ids[]"
                       onchange="add_tag('{{ json_encode($tag, JSON_HEX_APOS | JSON_HEX_QUOT) }}', this)"
-                      {{ is_array(old('tag_ids')) && in_array($tag->id, old("tag_ids")) ? 'checked' : '' }}
+                      @checked(is_array(old('tag_ids')) ? in_array($tag->id, old("tag_ids")) : $menu->tags->contains($tag->id))
                     />
                   @endforeach
                 </div>

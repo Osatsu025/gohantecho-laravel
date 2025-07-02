@@ -24,15 +24,25 @@
             <div class="flex items-center mb-4">
               <h1 class="text-2xl mr-10">{{ $menu->title }}</h1>
               @if ($menu->user)
-              <h2 class="text-l mr-auto">{{ $menu->user->name }}</h2>
+              <a href="{{ query_route('menus.index', ['author' => $menu->user->name, 'page' => 1]) }}" class="text-l mr-auto">{{ $menu->user->name }}</a>
               @else
               <h2 class="text-1 mr-auto">{{ __('Unknown') }}</h2>
               @endif
               @can('update', $menu)
-              <a role="button" class="btn mr-2" href="{{ route('menus.edit', $menu) }}">{{ __('Edit') }}</a>
+              <a role="button" class="btn mr-2" href="{{ route('menus.edit', $menu) }}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                  <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z"/>
+                </svg>
+                {{ __('Edit') }}
+              </a>
               @endcan
               @can('delete', $menu)
-              <button class="btn btn-error" onclick="delete_modal.showModal()">{{ __('Delete') }}</button>
+              <button class="btn btn-error" onclick="delete_modal.showModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                  <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                </svg>
+                {{ __('Delete') }}
+              </button>
               <dialog id="delete_modal" class="modal">
                 <div class="modal-box">
                   <h3 class="text-lg font-bold">{{ __('Do you really want to delete this menu ?') }}</h3>
@@ -53,9 +63,18 @@
             <p class="mb-4">{!! nl2br(e($menu->content)) !!}</p>
             <div>
               <p>タグ</p>
-              @foreach ($menu->tags as $tag)
-              <button class="btn btn-xs">{{ $tag->name }}</button>
-              @endforeach 
+                @foreach ($menu->tags as $tag)
+                  @php
+                    $is_active_tag = in_array($tag->id, $tag_ids);
+
+                    if ($is_active_tag) {
+                      $new_tag_ids = array_values(array_filter($tag_ids, fn($id) => $id != $tag->id));
+                    } else {
+                      $new_tag_ids = array_values(array_unique(array_merge($tag_ids, [$tag->id])));
+                    }
+                  @endphp
+                  <a href="{{ query_route('menus.index', ['tag_ids' => $new_tag_ids, 'page' => 1]) }}" role="button" class="btn btn-xs @if($is_active_tag) btn-soft btn-primary @endif">{{ $tag->name }}</a>
+                @endforeach
             </div>
           </div>
         </div>

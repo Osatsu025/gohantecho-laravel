@@ -10,6 +10,8 @@ use App\Models\Tag;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 
+use function PHPSTORM_META\map;
+
 class MenuController extends Controller
 {
     public const SORT_LIST = [
@@ -30,11 +32,18 @@ class MenuController extends Controller
         $keyword = $validated['keyword'] ?? null;
         $author = $validated['author'] ?? null;
         $sort_type = $validated['sort_type'] ?? array_key_first(self::SORT_LIST);
+        $tag_ids = $validated['tag_ids'] ?? [];
+
+        $selected_tag_names = [];
+        if (!empty($tag_ids)) {
+            $selected_tag_names = Tag::whereIn('id', $tag_ids)->pluck('name')->toArray();
+        }
 
         $query = Menu::query()
             ->with(['user', 'tags'])
             ->searchByKeyword($keyword)
-            ->filterByAuthor($author);
+            ->filterByAuthor($author)
+            ->filterByTagIds($tag_ids);
 
         $sort_column = self::SORT_LIST[$sort_type]['column'];
         $sort_direction = self::SORT_LIST[$sort_type]['direction'];
@@ -42,12 +51,17 @@ class MenuController extends Controller
 
         $menus = $query->paginate(10);
 
+        $tags = Tag::all();
+
         return view('menus.index', compact(
             'menus',
             'keyword',
             'author',
+            'tag_ids',
+            'selected_tag_names',
             'sort_list',
             'sort_type',
+            'tags',
         ));
     }
 
@@ -80,8 +94,9 @@ class MenuController extends Controller
         $this->authorize('view', $menu);
 
         $menu->load(['user', 'tags']);
+        $tag_ids = request()->query('tag_ids', []);
 
-        return view('menus.show', compact('menu'));
+        return view('menus.show', compact('menu', 'tag_ids'));
     }
 
     public function edit(Menu $menu) {
