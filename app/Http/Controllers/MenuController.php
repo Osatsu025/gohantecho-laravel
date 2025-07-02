@@ -98,8 +98,9 @@ class MenuController extends Controller
         $this->authorize('view', $menu);
 
         $menu->load(['user', 'tags']);
+        $tag_ids = request()->query('tag_ids', []);
 
-        return view('menus.show', compact('menu'));
+        return view('menus.show', compact('menu', 'tag_ids'));
     }
 
     public function edit(Menu $menu) {

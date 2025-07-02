@@ -63,9 +63,18 @@
             <p class="mb-4">{!! nl2br(e($menu->content)) !!}</p>
             <div>
               <p>タグ</p>
-              @foreach ($menu->tags as $tag)
-              <a href="{{ query_route('menus.index', ['tag_id' => $tag->id, 'page' => 1]) }}" role="button" class="btn btn-xs">{{ $tag->name }}</a>
-              @endforeach 
+                @foreach ($menu->tags as $tag)
+                  @php
+                    $is_active_tag = in_array($tag->id, $tag_ids);
+
+                    if ($is_active_tag) {
+                      $new_tag_ids = array_values(array_filter($tag_ids, fn($id) => $id != $tag->id));
+                    } else {
+                      $new_tag_ids = array_values(array_unique(array_merge($tag_ids, [$tag->id])));
+                    }
+                  @endphp
+                  <a href="{{ query_route('menus.index', ['tag_ids' => $new_tag_ids, 'page' => 1]) }}" role="button" class="btn btn-xs @if($is_active_tag) btn-soft btn-primary @endif">{{ $tag->name }}</a>
+                @endforeach
             </div>
           </div>
         </div>
