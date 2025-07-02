@@ -157,7 +157,7 @@
                 <tr class="hover:bg-base-300">
                   <td><a href="{{ route('menus.show', array_merge(request()->query(), ['menu' => $menu])) }}">{{ $menu->title }}</a></td>
                   @if ($menu->user)
-                  <td><a href="{{ route('menus.index', array_merge(request()->query(), ['author' => $menu->user->name])) }}">{{ $menu->user->name }}</a></td>
+                  <td><a href="{{ route('menus.index', array_merge(request()->query(), ['author' => $menu->user->name, 'page' => 1])) }}">{{ $menu->user->name }}</a></td>
                   @else
                   <td>{{ __('Unknown') }}</td>
                   @endif
