@@ -33,10 +33,6 @@ class MenuController extends Controller
         $author = $validated['author'] ?? null;
         $sort_type = $validated['sort_type'] ?? array_key_first(self::SORT_LIST);
         $tag_ids = $validated['tag_ids'] ?? [];
-        $tag_id = $validated['tag_id'] ?? null;
-        if ($tag_id && !in_array($tag_id, $tag_ids)) {
-            $tag_ids[] = $tag_id;
-        }
 
         $selected_tag_names = [];
         if (!empty($tag_ids)) {
