@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Attribute;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -44,7 +44,7 @@ class Menu extends Model
         }
 
         $converted_keyword_str = mb_convert_kana($keyword_str, 's');
-        $keywords = array_values(array_filter(explode(' ', $converted_keyword_str)));
+        $keywords = preg_split('/\s+/', $converted_keyword_str, -1, PREG_SPLIT_NO_EMPTY);
 
         foreach ($keywords as $keyword) {
             $query->where(function ($q) use ($keyword) {
@@ -65,7 +65,7 @@ class Menu extends Model
      * 作者名でメニューを絞り込むスコープ
      * 
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string|null
+     * @param string|null $author_name
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeFilterByAuthor($query, $author_name)
@@ -83,7 +83,7 @@ class Menu extends Model
      * 絞り込みボタンから選択されたタグで絞り込み検索をするスコープ
      *  
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param int[]
+     * @param int[] $tag_ids
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeFilterByTagIds($query, $tag_ids)
@@ -92,14 +92,9 @@ class Menu extends Model
             return $query;
         }
 
-        $filter_query = $query;
-        foreach ($tag_ids as $tag_id) {
-            $filter_query = $filter_query->whereHas('tags', function ($q) use ($tag_id) {
-                $q->where('tags.id', $tag_id);
-            });
-        }
-
-        return $filter_query;
+        return $query->whereHas('tags', function ($q) use ($tag_ids) {
+            $q->whereIn('tags.id', $tag_ids);
+        }, '=', count($tag_ids));
     }
 
     /**
