@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Attribute;
-use Illuminate\Database\Eloquent\Casts\Attribute as CastsAttribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -38,22 +37,28 @@ class Menu extends Model
      * @param string|null $keyword
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeSearchByKeyword($query, $keyword)
+    public function scopeSearchByKeyword($query, $keyword_str)
     {
-        if (empty($keyword)) {
+        if (empty($keyword_str)) {
             return $query;
         }
 
-        return $query->where(function ($q) use ($keyword) {
-            $q->where('title', 'like', "%{$keyword}%")
-                ->orWhere('content', 'like', "%{$keyword}%")
-                ->orWhereHas('user', function ($sub_query) use ($keyword) {
-                    $sub_query->where('name', 'like', "%{$keyword}%");
-                })
-            ->orWhereHas('tags', function ($sub_query) use ($keyword) {
-                $sub_query->where('name', 'like', "%{$keyword}%");
-            });
-        });
+        $converted_keyword_str = mb_convert_kana($keyword_str, 's');
+        $keywords = array_values(array_filter(explode(' ', $converted_keyword_str)));
+
+        foreach ($keywords as $keyword) {
+            $query->where(function ($q) use ($keyword) {
+                $q->where('title', 'like', "%{$keyword}%")
+                    ->orWhere('content', 'like', "%{$keyword}%")
+                    ->orWhereHas('user', function ($sub_query) use ($keyword) {
+                        $sub_query->where('name', 'like', "%{$keyword}%");
+                    })
+                    ->orWhereHas('tags', function ($sub_query) use ($keyword) {
+                        $sub_query->where('name', 'like', "%{$keyword}%");
+                    });
+            });   
+        }
+        return $query;
     }
 
     /**
@@ -78,7 +83,7 @@ class Menu extends Model
      * 絞り込みボタンから選択されたタグで絞り込み検索をするスコープ
      *  
      * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string|null
+     * @param int[]
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeFilterByTagIds($query, $tag_ids)
