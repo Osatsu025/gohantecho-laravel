@@ -35,21 +35,6 @@ class Tag extends Model
             return [];
         }
 
-        // $tag_ids = [];
-        // foreach($tag_names as $tag_name) {
-        //     $tag = self::withTrashed()->where('name', $tag_name)->first();
-        //     if ($tag) {
-        //         if ($tag->trashed()) {
-        //             $tag->restore();
-        //         }
-        //     } else {
-        //         $tag = self::create(['name' => $tag_name]);
-        //     }
-        //     $tag_ids[] = $tag->id;
-        // }
-        // return $tag_ids;
-    
-
         $existing_tags = self::withTrashed()->whereIn('name', $tag_names)->get();
         $existing_tag_names = $existing_tags->pluck('name')->all();
 
@@ -64,7 +49,7 @@ class Tag extends Model
             self::insert($new_tags_data);
         }
 
-        $tags_to_restore = $existing_tag_names->whereNotNull('deleted_at');
+        $tags_to_restore = $existing_tags->whereNotNull('deleted_at');
         if ($tags_to_restore->isNotEmpty()) {
             $tags_to_restore->toQuery()->restore();
         }
