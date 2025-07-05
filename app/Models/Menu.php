@@ -43,8 +43,7 @@ class Menu extends Model
             return $query;
         }
 
-        $converted_keyword_str = mb_convert_kana($keyword_str, 's');
-        $keywords = preg_split('/\s+/', $converted_keyword_str, -1, PREG_SPLIT_NO_EMPTY);
+        $keywords = preg_split('/\s+/u', $keyword_str, -1, PREG_SPLIT_NO_EMPTY);
 
         foreach ($keywords as $keyword) {
             $query->where(function ($q) use ($keyword) {

@@ -28,8 +28,7 @@ class Tag extends Model
      */
     public static function findOrCreateByName(string $tag_names_str): array
     {
-        $converted_tag_name_str = mb_convert_kana($tag_names_str, 's');
-        $tag_names = array_values(array_unique(preg_split('/\s+/', $converted_tag_name_str, -1, PREG_SPLIT_NO_EMPTY)));
+        $tag_names = array_values(array_unique(preg_split('/\s+/u', $tag_names_str, -1, PREG_SPLIT_NO_EMPTY)));
 
         if (empty($tag_names)) {
             return [];
