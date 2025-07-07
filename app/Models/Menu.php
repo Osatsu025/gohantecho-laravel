@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Auth;
 
 class Menu extends Model
 {
@@ -94,6 +95,17 @@ class Menu extends Model
         return $query->whereHas('tags', function ($q) use ($tag_ids) {
             $q->whereIn('tags.id', $tag_ids);
         }, '=', count($tag_ids));
+    }
+
+    /**
+     * 作者が自分のメニュー/公開設定がONのメニューに絞り込むためのスコープ
+     * 
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeFilterByPublic($query)
+    {
+        return $query->where('user_id', Auth::id())
+                    ->orWhere('public', true);
     }
 
     /**

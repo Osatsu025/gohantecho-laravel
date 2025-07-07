@@ -40,6 +40,7 @@ class MenuController extends Controller
 
         $query = Menu::query()
             ->with(['user', 'tags'])
+            ->filterByPublic()
             ->searchByKeyword($keyword)
             ->filterByAuthor($author)
             ->filterByTagIds($tag_ids);
