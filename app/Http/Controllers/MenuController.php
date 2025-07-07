@@ -49,12 +49,16 @@ class MenuController extends Controller
         $sort_direction = self::SORT_LIST[$sort_type]['direction'];
         $query->orderBy($sort_column, $sort_direction);
 
-        $menus = $query->paginate(10);
+        $other_query = clone $query;
+
+        $users_menus = $query->where('user_id', Auth::id())->paginate(10);
+        $others_menus = $other_query->whereNot('user_id', Auth::id())->paginate(10);
 
         $tags = Tag::all();
 
         return view('menus.index', compact(
-            'menus',
+            'users_menus',
+            'others_menus',
             'keyword',
             'author',
             'tag_ids',

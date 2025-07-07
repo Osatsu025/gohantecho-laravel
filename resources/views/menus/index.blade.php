@@ -141,44 +141,92 @@
               @endif
           </div>
 
-            <table class="table mb-4">
-              <thead>
-                <tr>
-                  <th>タイトル</th>
-                  <th>作者</th>
-                  <th>タグ</th>
-                </tr>
-              </thead>
-              <tbody>
-                @foreach ($menus as $menu)
-                <tr class="hover:bg-base-300">
-                  <td><a href="{{ query_route('menus.show', ['menu' => $menu]) }}">{{ $menu->title }}</a></td>
-                  @if ($menu->user)
-                  <td><a href="{{ query_route('menus.index', ['author' => $menu->user->name, 'page' => 1]) }}">{{ $menu->user->name }}</a></td>
-                  @else
-                  <td>{{ __('Unknown') }}</td>
-                  @endif
-                  <td>
-                    @foreach ($menu->tags as $tag)
-                      @php
-                        $is_active_tag = in_array($tag->id, $tag_ids);
+            <div class="tabs tabs-lift">
+              <input type="radio" name="author_tabs" class="tab" aria-label="自分のメニュー" checked="checked">
+              <div class="tab-content bg-base-100 border-base-300 p-6">
+                <table class="table mb-4">
+                  <thead>
+                    <tr>
+                      <th>タイトル</th>
+                      <th>作者</th>
+                      <th>タグ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @foreach ($users_menus as $menu)
+                    <tr class="hover:bg-base-300">
+                      <td><a href="{{ query_route('menus.show', ['menu' => $menu]) }}">{{ $menu->title }}</a></td>
+                      @if ($menu->user)
+                      <td><a href="{{ query_route('menus.index', ['author' => $menu->user->name, 'page' => 1]) }}">{{ $menu->user->name }}</a></td>
+                      @else
+                      <td>{{ __('Unknown') }}</td>
+                      @endif
+                      <td>
+                        @foreach ($menu->tags as $tag)
+                          @php
+                            $is_active_tag = in_array($tag->id, $tag_ids);
 
-                        if ($is_active_tag) {
-                          $new_tag_ids = array_values(array_filter($tag_ids, fn($id) => $id != $tag->id));
-                        } else {
-                          $new_tag_ids = array_values(array_unique(array_merge($tag_ids, [$tag->id])));
-                        }
-                      @endphp
-                      <a href="{{ query_route('menus.index', ['tag_ids' => $new_tag_ids, 'page' => 1]) }}"
-                        role="button" class="btn btn-xs @if($is_active_tag) btn-soft btn-primary @endif">{{ $tag->name }}</a>
+                            if ($is_active_tag) {
+                              $new_tag_ids = array_values(array_filter($tag_ids, fn($id) => $id != $tag->id));
+                            } else {
+                              $new_tag_ids = array_values(array_unique(array_merge($tag_ids, [$tag->id])));
+                            }
+                          @endphp
+                          <a href="{{ query_route('menus.index', ['tag_ids' => $new_tag_ids, 'page' => 1]) }}"
+                            role="button" class="btn btn-xs @if($is_active_tag) btn-soft btn-primary @endif">{{ $tag->name }}</a>
+                        @endforeach
+                      </td>
+                    </tr>
                     @endforeach
-                  </td>
-                </tr>
-                @endforeach
-              </tbody>
-            </table>
-            <div class="mb-4">
-              {{ $menus->appends(request()->query())->links() }}
+                  </tbody>
+                </table>
+                <div class="mb-4">
+                  {{ $users_menus->appends(request()->query())->links() }}
+                </div>
+              </div>
+              
+              <input type="radio" name="author_tabs" class="tab" aria-label="みんなのメニュー">
+              <div class="tab-content bg-base-100 border-base-300 p-6">
+                <table class="table mb-4">
+                  <thead>
+                    <tr>
+                      <th>タイトル</th>
+                      <th>作者</th>
+                      <th>タグ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @foreach ($others_menus as $menu)
+                    <tr class="hover:bg-base-300">
+                      <td><a href="{{ query_route('menus.show', ['menu' => $menu]) }}">{{ $menu->title }}</a></td>
+                      @if ($menu->user)
+                      <td><a href="{{ query_route('menus.index', ['author' => $menu->user->name, 'page' => 1]) }}">{{ $menu->user->name }}</a></td>
+                      @else
+                      <td>{{ __('Unknown') }}</td>
+                      @endif
+                      <td>
+                        @foreach ($menu->tags as $tag)
+                          @php
+                            $is_active_tag = in_array($tag->id, $tag_ids);
+
+                            if ($is_active_tag) {
+                              $new_tag_ids = array_values(array_filter($tag_ids, fn($id) => $id != $tag->id));
+                            } else {
+                              $new_tag_ids = array_values(array_unique(array_merge($tag_ids, [$tag->id])));
+                            }
+                          @endphp
+                          <a href="{{ query_route('menus.index', ['tag_ids' => $new_tag_ids, 'page' => 1]) }}"
+                            role="button" class="btn btn-xs @if($is_active_tag) btn-soft btn-primary @endif">{{ $tag->name }}</a>
+                        @endforeach
+                      </td>
+                    </tr>
+                    @endforeach
+                  </tbody>
+                </table>
+                <div class="mb-4">
+                  {{ $others_menus->appends(request()->query())->links() }}
+                </div>
+              </div>
             </div>
           </div>
         </div>
