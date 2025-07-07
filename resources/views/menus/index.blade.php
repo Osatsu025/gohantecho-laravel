@@ -142,7 +142,7 @@
           </div>
 
             <div class="tabs tabs-lift">
-              <input type="radio" name="author_tabs" class="tab" aria-label="自分のメニュー" checked="checked">
+              <input type="radio" name="author_tabs" class="tab flex-auto" aria-label="自分のメニュー" checked="checked">
               <div class="tab-content bg-base-100 border-base-300 p-6">
                 <table class="table mb-4">
                   <thead>
@@ -179,7 +179,7 @@
                 </div>
               </div>
               
-              <input type="radio" name="author_tabs" class="tab" aria-label="みんなのメニュー">
+              <input type="radio" name="author_tabs" class="tab flex-auto" aria-label="みんなのメニュー">
               <div class="tab-content bg-base-100 border-base-300 p-6">
                 <table class="table mb-4">
                   <thead>
