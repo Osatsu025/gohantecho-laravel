@@ -148,7 +148,6 @@
                   <thead>
                     <tr>
                       <th>タイトル</th>
-                      <th>作者</th>
                       <th>タグ</th>
                     </tr>
                   </thead>
@@ -156,11 +155,6 @@
                     @foreach ($users_menus as $menu)
                     <tr class="hover:bg-base-300">
                       <td><a href="{{ query_route('menus.show', ['menu' => $menu]) }}">{{ $menu->title }}</a></td>
-                      @if ($menu->user)
-                      <td><a href="{{ query_route('menus.index', ['author' => $menu->user->name, 'page' => 1]) }}">{{ $menu->user->name }}</a></td>
-                      @else
-                      <td>{{ __('Unknown') }}</td>
-                      @endif
                       <td>
                         @foreach ($menu->tags as $tag)
                           @php
