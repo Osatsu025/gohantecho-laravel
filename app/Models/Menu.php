@@ -104,8 +104,10 @@ class Menu extends Model
      */
     public function scopeFilterByPublic($query)
     {
-        return $query->where('user_id', Auth::id())
+        return $query->where(function ($q) {
+                $q->where('user_id', Auth::id())
                     ->orWhere('public', true);
+        });
     }
 
     /**
