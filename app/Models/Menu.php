@@ -47,14 +47,15 @@ class Menu extends Model
         $keywords = preg_split('/\s+/u', $keyword_str, -1, PREG_SPLIT_NO_EMPTY);
 
         foreach ($keywords as $keyword) {
-            $query->where(function ($q) use ($keyword) {
-                $q->where('title', 'like', "%{$keyword}%")
-                    ->orWhere('content', 'like', "%{$keyword}%")
-                    ->orWhereHas('user', function ($sub_query) use ($keyword) {
-                        $sub_query->where('name', 'like', "%{$keyword}%");
+            $escaped_keyword = addcslashes($keyword, '%_\\');
+            $query->where(function ($q) use ($escaped_keyword) {
+                $q->where('title', 'like', "%{$escaped_keyword}%")
+                    ->orWhere('content', 'like', "%{$escaped_keyword}%")
+                    ->orWhereHas('user', function ($sub_query) use ($escaped_keyword) {
+                        $sub_query->where('name', 'like', "%{$escaped_keyword}%");
                     })
-                    ->orWhereHas('tags', function ($sub_query) use ($keyword) {
-                        $sub_query->where('name', 'like', "%{$keyword}%");
+                    ->orWhereHas('tags', function ($sub_query) use ($escaped_keyword) {
+                        $sub_query->where('name', 'like', "%{$escaped_keyword}%");
                     });
             });   
         }
