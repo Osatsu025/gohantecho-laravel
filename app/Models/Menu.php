@@ -30,6 +30,11 @@ class Menu extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function favoritedUsers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'menu_favorites', 'menu_id', 'user_id');
+    } 
+
     /**
      * キーワードでメニューを検索するスコープ。
      * 対象：タイトル、本文、作者名、タグ名
