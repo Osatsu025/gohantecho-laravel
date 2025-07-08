@@ -33,14 +33,14 @@ class MenuController extends Controller
         $author = $validated['author'] ?? null;
         $sort_type = $validated['sort_type'] ?? array_key_first(self::SORT_LIST);
         $tag_ids = $validated['tag_ids'] ?? [];
-
-        $selected_tag_names = [];
+        $selected_tags = collect();
         if (!empty($tag_ids)) {
-            $selected_tag_names = Tag::whereIn('id', $tag_ids)->pluck('name')->toArray();
+            $selected_tags = Tag::whereIn('id', $tag_ids)->get();
         }
 
         $query = Menu::query()
             ->with(['user', 'tags'])
+            ->filterByPublic()
             ->searchByKeyword($keyword)
             ->filterByAuthor($author)
             ->filterByTagIds($tag_ids);
@@ -49,16 +49,20 @@ class MenuController extends Controller
         $sort_direction = self::SORT_LIST[$sort_type]['direction'];
         $query->orderBy($sort_column, $sort_direction);
 
-        $menus = $query->paginate(10);
+        $other_query = clone $query;
+
+        $users_menus = $query->where('user_id', Auth::id())->paginate(10);
+        $others_menus = $other_query->whereNot('user_id', Auth::id())->paginate(10);
 
         $tags = Tag::all();
 
         return view('menus.index', compact(
-            'menus',
+            'users_menus',
+            'others_menus',
             'keyword',
             'author',
             'tag_ids',
-            'selected_tag_names',
+            'selected_tags',
             'sort_list',
             'sort_type',
             'tags',

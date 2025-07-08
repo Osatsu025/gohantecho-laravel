@@ -28,33 +28,31 @@ class Tag extends Model
      */
     public static function findOrCreateByName(string $tag_names_str): array
     {
-        $tag_names = [];
-        $normalized_tag_names_str = mb_convert_kana($tag_names_str, 's');
-        if (trim($normalized_tag_names_str) != '') {
-            $tag_names = array_unique(
-                array_filter(
-                    array_map('trim', explode(' ', $normalized_tag_names_str)),
-                    'strlen'
-                )
-            );
-        }
+        $tag_names = array_values(array_unique(preg_split('/\s+/u', $tag_names_str, -1, PREG_SPLIT_NO_EMPTY)));
 
         if (empty($tag_names)) {
             return [];
         }
 
-        $tag_ids = [];
-        foreach($tag_names as $tag_name) {
-            $tag = self::withTrashed()->where('name', $tag_name)->first();
-            if ($tag) {
-                if ($tag->trashed()) {
-                    $tag->restore();
-                }
-            } else {
-                $tag = self::create(['name' => $tag_name]);
+        $existing_tags = self::withTrashed()->whereIn('name', $tag_names)->get();
+        $existing_tag_names = $existing_tags->pluck('name')->all();
+
+        $tags_to_create = array_diff($tag_names, $existing_tag_names);
+
+        if (!empty($tags_to_create)) {
+            $new_tags_data = [];
+            $now = now();
+            foreach ($tags_to_create as $tag_name) {
+                $new_tags_data[] = ['name' => $tag_name, 'created_at' => $now, 'updated_at' => $now];
             }
-            $tag_ids[] = $tag->id;
+            self::insert($new_tags_data);
         }
-        return $tag_ids;
+
+        $tags_to_restore = $existing_tags->whereNotNull('deleted_at');
+        if ($tags_to_restore->isNotEmpty()) {
+            $tags_to_restore->toQuery()->restore();
+        }
+
+        return self::whereIn('name', $tag_names)->pluck('id')->all();
     }
 }
