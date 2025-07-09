@@ -147,4 +147,21 @@ class MenuController extends Controller
         return to_route('menus.index')->with('flash_message', $message);
     }
 
+    public function favorite(Menu $menu) {
+
+        $this->authorize('create', $menu);
+        
+        /** @var User $user */
+        $user = Auth::user();
+        $isFavorited = $user->favoriteMenus()->where('menu_id', $menu->id)->exists();
+
+        if ($isFavorited) {
+            $user->favoriteMenus()->detach($menu);
+        } else {
+            $user->favoriteMenus()->attach($menu);
+        }
+
+        return to_route('menus.index');
+    }
+
 }
