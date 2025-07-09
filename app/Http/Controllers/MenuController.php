@@ -161,7 +161,7 @@ class MenuController extends Controller
             $user->favoriteMenus()->attach($menu);
         }
 
-        return to_route('menus.index');
+        return back();
     }
 
 }
