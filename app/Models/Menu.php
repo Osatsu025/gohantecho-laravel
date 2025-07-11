@@ -23,7 +23,8 @@ class Menu extends Model
 
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class);
+        return $this->belongsToMany(Tag::class)
+                    ->withTimestamps();
     }
 
     public function user(): BelongsTo
@@ -33,7 +34,8 @@ class Menu extends Model
 
     public function favoritedUsers(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'menu_favorites', 'menu_id', 'user_id');
+        return $this->belongsToMany(User::class, 'menu_favorites', 'menu_id', 'user_id')
+                    ->withTimestamps();
     } 
 
     public function memos(): HasMany
