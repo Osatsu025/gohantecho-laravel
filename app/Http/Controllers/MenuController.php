@@ -37,13 +37,15 @@ class MenuController extends Controller
         if (!empty($tag_ids)) {
             $selected_tags = Tag::whereIn('id', $tag_ids)->get();
         }
+        $is_only_favorited = $validated['is_only_favorited'] ?? null;
 
         $query = Menu::query()
             ->with(['user', 'tags'])
             ->filterByPublic()
             ->searchByKeyword($keyword)
             ->filterByAuthor($author)
-            ->filterByTagIds($tag_ids);
+            ->filterByTagIds($tag_ids)
+            ->filterByFavorited($is_only_favorited);
 
         $sort_column = self::SORT_LIST[$sort_type]['column'];
         $sort_direction = self::SORT_LIST[$sort_type]['direction'];
@@ -63,6 +65,7 @@ class MenuController extends Controller
             'author',
             'tag_ids',
             'selected_tags',
+            'is_only_favorited',
             'sort_list',
             'sort_type',
             'tags',

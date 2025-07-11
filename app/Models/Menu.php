@@ -106,6 +106,7 @@ class Menu extends Model
     /**
      * 作者が自分のメニュー/公開設定がONのメニューに絞り込むためのスコープ
      * 
+     * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeFilterByPublic($query)
@@ -115,6 +116,26 @@ class Menu extends Model
                     ->orWhere('public', true);
         });
     }
+
+    /**
+     * お気に入りに追加しているメニューに絞り込むためのスコープ
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param boolean $is_only_favorited
+     * @param \Illuminate\Database\Eloquent\Builder
+     *  
+     */
+
+     public function scopeFilterByFavorited($query, $is_only_favorited)
+     {
+        if (!$is_only_favorited) {
+            return $query;
+        }
+
+        return $query->whereHas('favoritedUsers', function ($q) {
+            $q->where('menu_favorites.user_id', Auth::id());
+        });
+     }
 
     /**
      * 関連付けられたタグをスペース区切りの文字列として取得するアクセサ

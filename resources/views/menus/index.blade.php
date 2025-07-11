@@ -57,7 +57,7 @@
                   新規投稿
                 </a>
               </div>
-              <button type="button" class="btn btn-sm @if($tag_ids) btn-primary @endif" onclick="filter_modal.showModal()">
+              <button type="button" class="btn btn-sm @if($tag_ids || $is_only_favorited) btn-primary @endif" onclick="filter_modal.showModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                   <path d="M1.5 1.5A.5.5 0 0 1 2 1h12a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-.128.334L10 8.692V13.5a.5.5 0 0 1-.342.474l-3 1.5A.5.5 0 0 1 6 14.5V8.692L1.628 3.834A.5.5 0 0 1 1.5 3.5v-2zm1 .5v1.308l4.372 4.858A.5.5 0 0 1 7 8.5v5.306l2-.666V8.5a.5.5 0 0 1 .128-.334L13.5 2.808V2h-11z"/>
                 </svg>
@@ -83,7 +83,7 @@
                       リセット
                     </button>
                   </div>
-                  <div class="mb-2">
+                  <div class="mb-4">
                     <h4 class="text-base font-bold mb-2">タグ</h4>
                     @foreach($tags as $tag)
                       <input
@@ -98,6 +98,12 @@
                       />
                     @endforeach
                   </div>
+                  <div class="mb-4">
+                    <label>
+                      <input type="checkbox" class="checkbox" name="is_only_favorited" id="is_only_favorited" value="1" @checked($is_only_favorited) />
+                      お気に入りのメニューのみを表示
+                    </label>
+                  </div>
                   <div class="modal-action">
                     <button class="btn btn-primary" form="search_form" type="submit">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -110,7 +116,7 @@
               </dialog>
             </form>
 
-            @if (!empty($author) || !empty($tag_ids))
+            @if (!empty($author) || !empty($tag_ids || !empty($is_only_favorited)))
             <div class="flex items-center gap-2 flex-wrap mb-4">
               <h3 class="text-lg font-semibold text-base-content/70">
                 絞り込み条件：
@@ -138,6 +144,15 @@
                     </svg>
                   </a>  
                 @endforeach
+              @endif
+              @if ($is_only_favorited)
+              <a role="button" href="{{ query_route('menus.index', ['page' => 1], 'is_only_favorited') }}" class="btn btn-sm btn-soft btn-primary">
+                お気に入り
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                  <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                </svg>
+              </a>
               @endif
             </div>
 
@@ -268,10 +283,12 @@
   document.addEventListener('DOMContentLoaded', function() {
     const resetButton = document.getElementById('reset_filter_button');
     const checkboxes = document.querySelectorAll('#filter_modal .tag-checkbox-selector');
+    const favorited_checkbox = document.getElementById('is_only_favorited');
 
     function updateResetButtonState() {
-      const isAnyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
-        if (isAnyChecked) {
+      const isAnyTagsChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+      const isFavoritedChecked = favorited_checkbox.checked;
+        if (isAnyTagsChecked || isFavoritedChecked) {
           resetButton.classList.add('btn-neutral');
         } else {
           resetButton.classList.remove('btn-neutral');
@@ -280,10 +297,12 @@
 
     resetButton.addEventListener('click', function() {
       checkboxes.forEach(checkbox => checkbox.checked = false);
+      favorited_checkbox.checked = false;
       updateResetButtonState();
-    })
+    });
 
     checkboxes.forEach(checkbox => checkbox.addEventListener('change', updateResetButtonState));
+    favorited_checkbox.addEventListener('change', updateResetButtonState);
 
     updateResetButtonState();
 
