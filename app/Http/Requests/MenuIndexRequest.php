@@ -29,6 +29,7 @@ class MenuIndexRequest extends FormRequest
             'author' => ['nullable', 'string', Rule::exists('users', 'name')],
             'tag_ids' => ['nullable', 'array'],
             'tag_ids.*' => ['numeric', Rule::exists('tags', 'id')],
+            'is_only_favorited' => ['nullable', 'boolean'],
         ];
     }
 
@@ -36,4 +37,11 @@ class MenuIndexRequest extends FormRequest
     {
         return $this->query();
     }
+
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'is_only_favorited' => $this->boolean('is_only_favorited'),
+        ]);
+    } 
 }

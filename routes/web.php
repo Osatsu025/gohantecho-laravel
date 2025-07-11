@@ -18,6 +18,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::resource('menus', MenuController::class);
+    Route::post('menus/{menu}/favorite', [MenuController::class, 'favorite'])->name('menus.favorite');
 });
 
 require __DIR__.'/auth.php';
