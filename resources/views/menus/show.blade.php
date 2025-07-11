@@ -21,13 +21,8 @@
             </div>
             @endif
 
-            <div class="flex items-center mb-4">
+            <div class="flex items-center mb-2">
               <h1 class="text-2xl mr-10">{{ $menu->title }}</h1>
-              @if ($menu->user)
-              <a href="{{ query_route('menus.index', ['author' => $menu->user->name, 'page' => 1]) }}" class="text-l mr-auto">{{ $menu->user->name }}</a>
-              @else
-              <h2 class="text-1 mr-auto">{{ __('Unknown') }}</h2>
-              @endif
               @can('update', $menu)
               <a role="button" class="btn mr-2" href="{{ route('menus.edit', $menu) }}">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
@@ -73,6 +68,13 @@
                   @endif
                 </button>
               </form>
+            </div>
+            <div class="mb-8">
+              @if ($menu->user)
+              <a href="{{ query_route('menus.index', ['author' => $menu->user->name, 'page' => 1]) }}" class="text-lg">{{ $menu->user->name }}</a>
+              @else
+              <h2 class="text-1">{{ __('Unknown') }}</h2>
+              @endif
             </div>
             <p class="mb-4">{!! nl2br(e($menu->content)) !!}</p>
             <div>
