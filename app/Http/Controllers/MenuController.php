@@ -154,6 +154,8 @@ class MenuController extends Controller
     }
 
     public function favorite(Menu $menu) {
+
+        $this->authorize('create', Menu::class);
         
         /** @var User $user */
         $user = Auth::user();
