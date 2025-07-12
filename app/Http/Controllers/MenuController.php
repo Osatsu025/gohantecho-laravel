@@ -100,10 +100,13 @@ class MenuController extends Controller
     public function show(Menu $menu) {
         $this->authorize('view', $menu);
 
-        $menu->load(['user', 'tags']);
+        $user = Auth::user();
+
+        $menu->load(['user', 'tags', 'memos']);
+        $memo = $menu->memos->where('user_id', $user->id)->first();
         $tag_ids = request()->query('tag_ids', []);
 
-        return view('menus.show', compact('menu', 'tag_ids'));
+        return view('menus.show', compact('menu', 'tag_ids', 'memo'));
     }
 
     public function edit(Menu $menu) {
@@ -151,8 +154,6 @@ class MenuController extends Controller
     }
 
     public function favorite(Menu $menu) {
-
-        $this->authorize('create', $menu);
         
         /** @var User $user */
         $user = Auth::user();

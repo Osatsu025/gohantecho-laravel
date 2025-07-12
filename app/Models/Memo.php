@@ -7,6 +7,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Memo extends Model
 {
+    protected $fillable = [
+        'menu_id',
+        'content',
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

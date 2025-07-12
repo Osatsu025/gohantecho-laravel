@@ -77,7 +77,7 @@
               @endif
             </div>
             <p class="mb-4">{!! nl2br(e($menu->content)) !!}</p>
-            <div>
+            <div class="mb-4">
               <p>タグ</p>
                 @foreach ($menu->tags as $tag)
                   @php
@@ -91,6 +91,52 @@
                   @endphp
                   <a href="{{ query_route('menus.index', ['tag_ids' => $new_tag_ids, 'page' => 1]) }}" role="button" class="btn btn-xs @if($is_active_tag) btn-soft btn-primary @endif">{{ $tag->name }}</a>
                 @endforeach
+            </div>
+            <div>
+              <p>自分用メモ</p>
+              @if($memo)
+              <form method="POST" action="{{ route('memos.update', [$menu, $memo]) }}">
+                @csrf
+                @method('PATCH')
+                <textarea name="content" id="" class="textarea w-xl size-70" placeholder="アレンジポイントや感想など(他のユーザには公開されません)">{!! nl2br(e($memo->content)) !!}</textarea>
+                <div class="flex gap-2">
+                  <button type="submit" class="btn btn-sm flex-grow btn-neutral">保存</button>
+                  <button type="button" class="btn btn-sm btn-error" onclick="memo_delete_modal.showModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                      <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                    </svg>
+                  </button>
+                </div>
+                <dialog id="memo_delete_modal" class="modal">
+                  <div class="modal-box">
+                    <p>メモを削除しますか？</p>
+                    <div class="modal-action">
+                      <form method="dialog">
+                        <button class="btn">キャンセル</button>
+                      </form>
+                      <form method="POST" action="{{ route('memos.destroy', [$menu, $memo]) }}">
+                        @csrf
+                        @method('delete')
+                        <button type="submit" class="btn btn-error">
+                          削除
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                            <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                          </svg>
+                        </button>
+                      </form>
+                    </div>
+                  </div>
+                </dialog>
+              </form>
+              @else
+              <form method="POST" action="{{ route('memos.store', $menu) }}">
+                @csrf
+                <textarea name="content" id="" class="textarea w-xl size-70" placeholder="アレンジポイントや感想など(他のユーザには公開されません)"></textarea>
+                <div class="flex">
+                  <button type="submit" class="btn btn-sm btn-neutral flex-grow">保存</button>
+                </div>
+              </form>
+              @endif
             </div>
           </div>
         </div>
