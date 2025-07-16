@@ -19,12 +19,16 @@ class MemoController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
+        if ($menu->memos()->where('user_id', $user->id)->exists()) {
+            return back()->with('error_message', 'メモはすでに登録されています');
+        }
+
         $user->memos()->create([
             ...$validated,
             'menu_id' => $menu->id
         ]);
 
-        return back();
+        return back()->with('flash_message', 'メモを登録しました');
     }
 
     public function update(MemoStoreRequest $request, Menu $menu, Memo $memo)
@@ -34,7 +38,7 @@ class MemoController extends Controller
         $validated = $request->validated();
         $memo->update($validated);
 
-        return back();
+        return back()->with('flash_message', 'メモを更新しました');
     }
 
     public function destroy(Menu $menu, Memo $memo)
@@ -43,6 +47,6 @@ class MemoController extends Controller
         
         $memo->delete();
 
-        return back();
+        return back()->with('flash_message', 'メモを削除しました');
     }
 }
