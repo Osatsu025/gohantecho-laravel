@@ -104,7 +104,7 @@
             <div>
               <p>自分用メモ</p>
               @if($memo)
-              <form method="POST" action="{{ route('memos.update', [$menu, $memo]) }}">
+              <form method="POST" action="{{ route('menus.memos.update', [$menu, $memo]) }}">
                 @csrf
                 @method('PATCH')
                 @error('content')
@@ -126,7 +126,7 @@
                       <form method="dialog">
                         <button class="btn">キャンセル</button>
                       </form>
-                      <form method="POST" action="{{ route('memos.destroy', [$menu, $memo]) }}">
+                      <form method="POST" action="{{ route('menus.memos.destroy', [$menu, $memo]) }}">
                         @csrf
                         @method('delete')
                         <button type="submit" class="btn btn-error">
@@ -141,7 +141,7 @@
                 </dialog>
               </form>
               @else
-              <form method="POST" action="{{ route('memos.store', $menu) }}">
+              <form method="POST" action="{{ route('menus.memos.store', $menu) }}">
                 @csrf
                 @error('content')
                   <p class="text-error-content">{{ $message }}</p>

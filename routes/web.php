@@ -21,9 +21,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('menus', MenuController::class);
     Route::post('menus/{menu}/favorite', [MenuController::class, 'favorite'])->name('menus.favorite');
 
-    Route::post('menus/{menu}/memos', [MemoController::class, 'store'])->name('memos.store');
-    Route::patch('menus/{menu}/memos/{memo}', [MemoController::class, 'update'])->name('memos.update');
-    Route::delete('menus/{menu}/memos/{memo}', [MemoController::class, 'destroy'])->name('memos.destroy');
+    Route::group(['prefix' => 'menus/{menu}', 'as' => 'menus.'], function () {
+        Route::resource('memos', MemoController::class)->only('store', 'update', 'destroy');
+    });
 });
 
 require __DIR__.'/auth.php';

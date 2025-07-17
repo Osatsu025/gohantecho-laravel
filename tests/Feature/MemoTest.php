@@ -68,7 +68,7 @@ class MemoTest extends TestCase
         $initial_memo_count = Memo::count();
         $menu = $this->createMenu($this->user);
         $new_memo_data = $this->createNewMemoData($menu);
-        $response = $this->post(route('memos.store', $menu), $new_memo_data);
+        $response = $this->post(route('menus.memos.store', $menu), $new_memo_data);
         $response->assertRedirect(route('login'));
         $this->assertDatabaseMissing('memos', $new_memo_data);
         $this->assertDatabaseCount('memos', $initial_memo_count);
@@ -79,7 +79,7 @@ class MemoTest extends TestCase
         $menu = $this->createMenu($this->user);
         $new_memo_data = $this->createNewMemoData($menu);
         $response = $this->actingAs($this->user)
-                        ->post(route('memos.store', $menu), $new_memo_data);
+                        ->post(route('menus.memos.store', $menu), $new_memo_data);
         $response->assertRedirectBack();
         $response->assertSessionHas('flash_message');
         $expected_data = array_merge($new_memo_data, ['user_id' => $this->user->id]);
@@ -92,7 +92,7 @@ class MemoTest extends TestCase
         $menu = $this->createMenu($other_user);
         $new_memo_data = $this->createNewMemoData($menu);
         $response = $this->actingAs($this->user)
-                        ->post(route('memos.store', $menu), $new_memo_data);
+                        ->post(route('menus.memos.store', $menu), $new_memo_data);
         $response->assertRedirectBack();
         $expected_data = array_merge($new_memo_data, ['user_id' => $this->user->id]);
         $this->assertDatabaseHas('memos', $expected_data);
@@ -104,7 +104,7 @@ class MemoTest extends TestCase
         $memo = $this->createMemo($this->user, $menu);
         $new_memo_data = $this->createNewMemoData($menu);
         
-        $response = $this->patch(route('memos.update', [$menu, $memo]), $new_memo_data);
+        $response = $this->patch(route('menus.memos.update', [$menu, $memo]), $new_memo_data);
         $response->assertRedirect(route('login'));
         $expected_data = Arr::only($memo->toArray(), [
             'user_id',
@@ -128,7 +128,7 @@ class MemoTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-                        ->patch(route('memos.update', [$menu, $other_users_memo]), $new_memo_data);
+                        ->patch(route('menus.memos.update', [$menu, $other_users_memo]), $new_memo_data);
         $response->assertForbidden();
         $this->assertDatabaseHas('memos', $expected_data);
         $this->assertDatabaseMissing('memos', $new_memo_data);
@@ -146,7 +146,7 @@ class MemoTest extends TestCase
         ]);
         
         $response = $this->actingAs($this->user)
-                        ->patch(route('memos.update', [$menu, $memo]), $new_memo_data);
+                        ->patch(route('menus.memos.update', [$menu, $memo]), $new_memo_data);
         $response->assertRedirectBack();
         $response->assertSessionHas('flash_message');
         $this->assertDatabaseMissing('memos', $old_data);
@@ -163,7 +163,7 @@ class MemoTest extends TestCase
             'content'
         ]);
 
-        $response = $this->delete(route('memos.destroy', [$menu, $memo]));
+        $response = $this->delete(route('menus.memos.destroy', [$menu, $memo]));
         $response->assertRedirect(route('login'));
         $this->assertDatabaseHas('memos', $expected_data);
     }
@@ -180,7 +180,7 @@ class MemoTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-                        ->delete(route('memos.destroy', [$menu, $other_users_memo]));
+                        ->delete(route('menus.memos.destroy', [$menu, $other_users_memo]));
         $response->assertForbidden();
         $this->assertDatabaseHas('memos', $old_data);
     }
@@ -191,7 +191,7 @@ class MemoTest extends TestCase
         $memo = $this->createMemo($this->user, $menu);
 
         $response = $this->actingAs($this->user)
-                        ->delete(route('memos.destroy', [$menu, $memo]));
+                        ->delete(route('menus.memos.destroy', [$menu, $memo]));
         $response->assertRedirectBack();
         $response->assertSessionHas('flash_message');
         $this->assertSoftDeleted($memo);
@@ -205,7 +205,7 @@ class MemoTest extends TestCase
         $initial_memo_count = Memo::count();
 
         $response = $this->actingAs($this->user)
-                        ->post(route('memos.store', $menu), $new_memo_data);
+                        ->post(route('menus.memos.store', $menu), $new_memo_data);
         $response->assertRedirectBack();
         $response->assertSessionHas('error_message');
         $this->assertDatabaseMissing('memos', $new_memo_data);
