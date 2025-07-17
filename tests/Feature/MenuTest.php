@@ -310,4 +310,76 @@ class MenuTest extends TestCase
         // タグが消えていないか
         $this->assertDatabaseHas('tags', ['name' => $remove_tag->name]);
     }
+
+    public function test_guest_cannot_add_menus_to_favorites()
+    {
+        $menu = $this->createMenu($this->user);
+        $response = $this->post(route('menus.favorite', $menu));
+        $response->assertRedirect(route('login'));
+        $this->assertDatabaseMissing('menu_favorites', [
+            'menu_id' => $menu->id,
+        ]);
+    }
+
+    public function test_user_can_add_own_menus_to_favorites()
+    {
+        $menu = $this->createMenu($this->user);
+        $response = $this->actingAs($this->user)
+                        ->post(route('menus.favorite', $menu));
+        $response->assertRedirectBack();
+        $this->assertDatabaseHas('menu_favorites', [
+            'user_id' => $this->user->id,
+            'menu_id' => $menu->id,
+        ]);
+    }
+
+    public function test_user_can_add_other_users_menus_to_favorites()
+    {
+        $other_user = $this->createOtherUser();
+        $menu = $this->createMenu($other_user);
+        $response = $this->actingAs($this->user)
+                        ->post(route('menus.favorite', $menu));
+        $response->assertRedirectBack();
+        $this->assertDatabaseHas('menu_favorites', [
+            'user_id' => $this->user->id,
+            'menu_id' => $menu->id,
+        ]);
+    }
+
+    public function test_user_can_remove_own_menus_from_favorites()
+    {
+        $menu = $this->createMenu($this->user);
+        $this->user->favoriteMenus()->attach($menu);
+        $this->assertDatabaseHas('menu_favorites', [
+            'user_id' => $this->user->id,
+            'menu_id' => $menu->id,
+        ]);
+
+        $response = $this->actingAs($this->user)
+                        ->post(route('menus.favorite', $menu));
+        $response->assertRedirectBack();
+        $this->assertDatabaseMissing('menu_favorites', [
+            'user_id' => $this->user->id,
+            'menu_id' => $menu->id,
+        ]);
+    }
+
+    public function test_user_can_remove_other_users_menus_from_favorites()
+    {
+        $other_user = $this->createOtherUser();
+        $menu = $this->createMenu($other_user);
+        $this->user->favoriteMenus()->attach($menu);
+        $this->assertDatabaseHas('menu_favorites', [
+            'user_id' => $this->user->id,
+            'menu_id' => $menu->id,
+        ]);
+
+        $response = $this->actingAs($this->user)
+                        ->post(route('menus.favorite', $menu));
+        $response->assertRedirectBack();
+        $this->assertDatabaseMissing('menu_favorites', [
+            'user_id' => $this->user->id,
+            'menu_id' => $menu->id,
+        ]);
+    }
 }
