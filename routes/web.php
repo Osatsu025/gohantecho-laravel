@@ -21,9 +21,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('menus', MenuController::class);
     Route::post('menus/{menu}/favorite', [MenuController::class, 'favorite'])->name('menus.favorite');
 
-    Route::group(['prefix' => 'menus/{menu}', 'as' => 'menus.'], function () {
-        Route::resource('memos', MemoController::class)->only('store', 'update', 'destroy');
-    });
+    Route::resource('menus.memos', MemoController::class)->only('store', 'update', 'destroy')->scoped();
 });
 
 require __DIR__.'/auth.php';

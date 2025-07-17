@@ -153,6 +153,20 @@ class MemoTest extends TestCase
         $this->assertDatabaseHas('memos', $new_memo_data);
     }
 
+    public function test_user_cannot_update_memo_via_unrelated_menu_route()
+    {
+        $menu1 = $this->createMenu($this->user);
+        $memo_for_menu1 = $this->createMemo($this->user, $menu1);
+
+        $menu2 = $this->createMenu($this->user);
+        $new_memo_data = $this->createNewMemoData($menu2);
+
+        $response = $this->actingAs($this->user)
+                        ->patch(route('menus.memos.update', [$menu2, $memo_for_menu1], $new_memo_data));
+        $response->assertNotFound();
+        $this->assertDatabaseMissing('memos', $new_memo_data);
+    }
+
     public function test_guest_cannot_destroy_memos()
     {
         $menu = $this->createMenu($this->user);
@@ -210,6 +224,21 @@ class MemoTest extends TestCase
         $response->assertSessionHas('error_message');
         $this->assertDatabaseMissing('memos', $new_memo_data);
         $this->assertDatabaseCount('memos', $initial_memo_count);
+    }
+
+    public function test_user_cannot_destroy_memo_via_unrelated_menu_route()
+    {
+        $menu1 = $this->createMenu($this->user);
+        $memo_for_menu1 = $this->createMemo($this->user, $menu1);
+
+        $menu2 = $this->createMenu($this->user);
+
+        $expected_data = Arr::only($memo_for_menu1->toArray(), 'user_id', 'menu_id', 'content');
+
+        $response = $this->actingAs($this->user)
+                        ->delete(route('menus.memos.update', [$menu2, $memo_for_menu1]));
+        $response->assertNotFound();
+        $this->assertNotSoftDeleted('memos', $expected_data);
     }
 
     
