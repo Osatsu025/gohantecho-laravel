@@ -6,12 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\MemoStoreRequest;
 use App\Models\Memo;
 use App\Models\Menu;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 
 class MemoController extends Controller
 {
 
-    public function store(MemoStoreRequest $request, Menu $menu)
+    public function store(MemoStoreRequest $request, Menu $menu): RedirectResponse
     {
         $this->authorize('create', Memo::class);
 
@@ -27,7 +28,7 @@ class MemoController extends Controller
         return back()->with('flash_message', 'メモを登録しました');
     }
 
-    public function update(MemoStoreRequest $request, Menu $menu, Memo $memo)
+    public function update(MemoStoreRequest $request, Menu $menu, Memo $memo): RedirectResponse
     {
         $this->authorize('update', $memo);
 
@@ -37,7 +38,7 @@ class MemoController extends Controller
         return back()->with('flash_message', 'メモを更新しました');
     }
 
-    public function destroy(Menu $menu, Memo $memo)
+    public function destroy(Menu $menu, Memo $memo): RedirectResponse
     {
         $this->authorize('delete', $memo);
         
