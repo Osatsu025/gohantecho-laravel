@@ -221,8 +221,7 @@ class MemoTest extends TestCase
         $response = $this->actingAs($this->user)
                         ->post(route('menus.memos.store', $menu), $new_memo_data);
         $response->assertRedirectBack();
-        $response->assertSessionHas('error_message');
-        $this->assertDatabaseMissing('memos', $new_memo_data);
+        $response->assertInvalid('content');
         $this->assertDatabaseCount('memos', $initial_memo_count);
     }
 
@@ -233,10 +232,14 @@ class MemoTest extends TestCase
 
         $menu2 = $this->createMenu($this->user);
 
-        $expected_data = Arr::only($memo_for_menu1->toArray(), 'user_id', 'menu_id', 'content');
+        $expected_data = Arr::only($memo_for_menu1->toArray(), [
+            'user_id',
+            'menu_id',
+            'content'
+        ]);
 
         $response = $this->actingAs($this->user)
-                        ->delete(route('menus.memos.update', [$menu2, $memo_for_menu1]));
+                        ->delete(route('menus.memos.destroy', [$menu2, $memo_for_menu1]));
         $response->assertNotFound();
         $this->assertNotSoftDeleted('memos', $expected_data);
     }

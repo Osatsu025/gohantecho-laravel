@@ -19,10 +19,6 @@ class MemoController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        if ($menu->memos()->where('user_id', $user->id)->exists()) {
-            return back()->with('error_message', 'メモはすでに登録されています');
-        }
-
         $user->memos()->create([
             ...$validated,
             'menu_id' => $menu->id

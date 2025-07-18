@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Memo;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Validator;
 
 class MemoStoreRequest extends FormRequest
 {
@@ -24,5 +26,25 @@ class MemoStoreRequest extends FormRequest
         return [
             'content' => ['required', 'string'],
         ];
+    }
+
+    public function withValidator(Validator $validator): void
+    {
+        $validator->after(function (Validator $validator) {
+            if ($this->isMethod('post')) {
+                $user = $this->user();
+                $menu = $this->route('menu');
+
+                if ($user && $menu) {
+                    $isExists = Memo::where('user_id', $user->id)
+                                    ->where('menu_id', $menu->id)
+                                    ->exists();
+                }
+
+                if ($isExists) {
+                    $validator->errors()->add('content', 'このメニューにはすでにメモが登録されています');
+                }
+            }
+        });
     }
 }
