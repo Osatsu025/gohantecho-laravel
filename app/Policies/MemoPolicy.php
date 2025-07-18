@@ -3,25 +3,25 @@
 namespace App\Policies;
 
 use Illuminate\Auth\Access\Response;
-use App\Models\Menu;
+use App\Models\Memo;
 use App\Models\User;
 
-class MenuPolicy
+class MemoPolicy
 {
     /**
      * Determine whether the user can view any models.
      */
     public function viewAny(User $user): bool
     {
-        return true;
+        return false;
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Menu $menu): bool
+    public function view(User $user, Memo $memo): bool
     {
-        return $menu->public || ($user->id === $menu->user_id);
+        return $user->id === $memo->user_id;
     }
 
     /**
@@ -35,23 +35,23 @@ class MenuPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(User $user, Menu $menu): bool
+    public function update(User $user, Memo $memo): bool
     {
-        return $user->id === $menu->user_id;
+        return $user->id === $memo->user_id;
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Menu $menu): bool
+    public function delete(User $user, Memo $memo): bool
     {
-        return $user->id === $menu->user_id;
+        return $user->id === $memo->user_id;;
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Menu $menu): bool
+    public function restore(User $user, Memo $memo): bool
     {
         return false;
     }
@@ -59,7 +59,7 @@ class MenuPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Menu $menu): bool
+    public function forceDelete(User $user, Memo $memo): bool
     {
         return false;
     }

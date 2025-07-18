@@ -9,8 +9,7 @@ use App\Models\Menu;
 use App\Models\Tag;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
-
-use function PHPSTORM_META\map;
+use Illuminate\View\View;
 
 class MenuController extends Controller
 {
@@ -21,7 +20,7 @@ class MenuController extends Controller
         '更新日の古い順' => ['column' => 'updated_at', 'direction' => 'asc'],
     ];
 
-    public function index(MenuIndexRequest $request) {
+    public function index(MenuIndexRequest $request): View {
 
         $this->authorize('viewAny', Menu::class);
 
@@ -72,14 +71,14 @@ class MenuController extends Controller
         ));
     }
 
-    public function create() {
+    public function create(): View {
         $this->authorize('create', Menu::class);
 
         $tags = Tag::all();
         return view('menus.create', compact('tags'));
     }
 
-    public function store(MenuStoreRequest $request) {
+    public function store(MenuStoreRequest $request): RedirectResponse {
         $this->authorize('create', Menu::class);
 
         $validated = $request->validated();
@@ -97,16 +96,19 @@ class MenuController extends Controller
         return to_route('menus.index')->with('flash_message', $message);
     }
 
-    public function show(Menu $menu) {
+    public function show(Menu $menu): View {
         $this->authorize('view', $menu);
 
-        $menu->load(['user', 'tags']);
+        $user = Auth::user();
+
+        $menu->load(['user', 'tags', 'memos']);
+        $memo = $menu->memos->where('user_id', $user->id)->first();
         $tag_ids = request()->query('tag_ids', []);
 
-        return view('menus.show', compact('menu', 'tag_ids'));
+        return view('menus.show', compact('menu', 'tag_ids', 'memo'));
     }
 
-    public function edit(Menu $menu) {
+    public function edit(Menu $menu): View {
 
         $this->authorize('update', $menu);
 
@@ -122,7 +124,7 @@ class MenuController extends Controller
         ));
     }
 
-    public function update(MenuStoreRequest $request, Menu $menu) {
+    public function update(MenuStoreRequest $request, Menu $menu): RedirectResponse {
         $this->authorize('update', $menu);
 
         $validated = $request->validated();
@@ -139,7 +141,7 @@ class MenuController extends Controller
         return to_route('menus.show', $menu)->with('flash_message', $message);
     }
 
-    public function destroy(Menu $menu) {
+    public function destroy(Menu $menu): RedirectResponse {
 
         $this->authorize('delete', $menu);
         
@@ -150,9 +152,9 @@ class MenuController extends Controller
         return to_route('menus.index')->with('flash_message', $message);
     }
 
-    public function favorite(Menu $menu) {
+    public function favorite(Menu $menu): RedirectResponse {
 
-        $this->authorize('create', $menu);
+        $this->authorize('view', $menu);
         
         /** @var User $user */
         $user = Auth::user();

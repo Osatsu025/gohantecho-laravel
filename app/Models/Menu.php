@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
@@ -22,7 +23,8 @@ class Menu extends Model
 
     public function tags(): BelongsToMany
     {
-        return $this->belongsToMany(Tag::class);
+        return $this->belongsToMany(Tag::class)
+                    ->withTimestamps();
     }
 
     public function user(): BelongsTo
@@ -32,8 +34,14 @@ class Menu extends Model
 
     public function favoritedUsers(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'menu_favorites', 'menu_id', 'user_id');
+        return $this->belongsToMany(User::class, 'menu_favorites', 'menu_id', 'user_id')
+                    ->withTimestamps();
     } 
+
+    public function memos(): HasMany
+    {
+        return $this->hasMany(Memo::class);
+    }
 
     /**
      * キーワードでメニューを検索するスコープ。

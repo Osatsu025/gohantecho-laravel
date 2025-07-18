@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MemoController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +20,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('menus', MenuController::class);
     Route::post('menus/{menu}/favorite', [MenuController::class, 'favorite'])->name('menus.favorite');
+
+    Route::resource('menus.memos', MemoController::class)->only('store', 'update', 'destroy')->scoped();
 });
 
 require __DIR__.'/auth.php';
