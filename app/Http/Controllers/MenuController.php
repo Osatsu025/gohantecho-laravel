@@ -154,7 +154,7 @@ class MenuController extends Controller
 
     public function favorite(Menu $menu): RedirectResponse {
 
-        $this->authorize('create', Menu::class);
+        $this->authorize('view', $menu);
         
         /** @var User $user */
         $user = Auth::user();

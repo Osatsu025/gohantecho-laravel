@@ -21,7 +21,7 @@ class MenuPolicy
      */
     public function view(User $user, Menu $menu): bool
     {
-        return true;
+        return $menu->public || ($user->id === $menu->user_id);
     }
 
     /**

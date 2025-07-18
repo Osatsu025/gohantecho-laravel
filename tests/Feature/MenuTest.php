@@ -31,9 +31,12 @@ class MenuTest extends TestCase
      * @param User $user
      * @return Menu
      */
-    protected function createMenu(User $user): Menu
+    protected function createMenu(User $user, ?array $elements = null): Menu
     {
-        return Menu::factory()->create(['user_id' => $user->id]);
+        return Menu::factory()->create(array_merge(
+            ['user_id' => $user->id],
+            $elements ?? []
+        ));
     }
 
     /** 
@@ -86,13 +89,26 @@ class MenuTest extends TestCase
         $response->assertOk();
     }
 
-    public function test_user_can_access_other_users_menus_show()
+    public function test_user_can_access_other_users_public_menus_show()
     {
         $other_user = $this->createOtherUser();
-        $other_users_menu = $this->createMenu($other_user);
+        $other_users_menu = $this->createMenu($other_user, [
+            'public' => true,
+        ]);
         $response = $this->actingAs($this->user)
                         ->get(route('menus.show', $other_users_menu));
         $response->assertOk();
+    }
+
+    public function test_user_cannot_access_other_users_private_menus_show()
+    {
+        $other_user = $this->createOtherUser();
+        $other_users_menu = $this->createMenu($other_user, [
+            'public' => false,
+        ]);
+        $response = $this->actingAs($this->user)
+                        ->get(route('menus.show', $other_users_menu));
+        $response->assertForbidden();
     }
 
     public function test_guest_cannot_store_menus()
@@ -333,14 +349,31 @@ class MenuTest extends TestCase
         ]);
     }
 
-    public function test_user_can_add_other_users_menus_to_favorites()
+    public function test_user_can_add_other_users_public_menus_to_favorites()
     {
         $other_user = $this->createOtherUser();
-        $menu = $this->createMenu($other_user);
+        $menu = $this->createMenu($other_user, [
+            'public' => true,
+        ]);
         $response = $this->actingAs($this->user)
                         ->post(route('menus.favorite', $menu));
         $response->assertRedirectBack();
         $this->assertDatabaseHas('menu_favorites', [
+            'user_id' => $this->user->id,
+            'menu_id' => $menu->id,
+        ]);
+    }
+
+    public function test_user_cannot_add_other_users_private_menus_to_favorites()
+    {
+        $other_user = $this->createOtherUser();
+        $menu = $this->createMenu($other_user, [
+            'public' => false,
+        ]);
+        $response = $this->actingAs($this->user)
+                        ->post(route('menus.favorite', $menu));
+        $response->assertForbidden();
+        $this->assertDatabaseMissing('menu_favorites', [
             'user_id' => $this->user->id,
             'menu_id' => $menu->id,
         ]);
@@ -367,7 +400,9 @@ class MenuTest extends TestCase
     public function test_user_can_remove_other_users_menus_from_favorites()
     {
         $other_user = $this->createOtherUser();
-        $menu = $this->createMenu($other_user);
+        $menu = $this->createMenu($other_user, [
+            'public' => true,
+        ]);
         $this->user->favoriteMenus()->attach($menu);
         $this->assertDatabaseHas('menu_favorites', [
             'user_id' => $this->user->id,
