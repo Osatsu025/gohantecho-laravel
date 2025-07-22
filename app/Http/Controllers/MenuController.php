@@ -18,6 +18,7 @@ class MenuController extends Controller
         '作成日の古い順' => ['column' => 'created_at', 'direction' => 'asc'],
         '更新日の新しい順' => ['column' => 'updated_at', 'direction' => 'desc'],
         '更新日の古い順' => ['column' => 'updated_at', 'direction' => 'asc'],
+        'お気に入り数の多い順' => ['column' => 'favorited_users_count', 'direction' => 'desc'],
     ];
 
     public function index(MenuIndexRequest $request): View {
@@ -40,6 +41,7 @@ class MenuController extends Controller
 
         $query = Menu::query()
             ->with(['user', 'tags', 'favoritedUsers'])
+            ->withCount('favoritedUsers')
             ->filterByPublic()
             ->searchByKeyword($keyword)
             ->filterByAuthor($author)
