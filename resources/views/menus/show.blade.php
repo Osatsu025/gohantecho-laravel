@@ -63,7 +63,7 @@
                 </div>
               </dialog>
               @endcan
-              <form method="POST" action="{{ query_route('menus.favorite', ['menu' => $menu]) }}">
+              <form method="POST" action="{{ query_route('menus.favorite', ['menu' => $menu]) }}" class="inline-flex items-center space-x-1">
                 @csrf
                 <button type="submit">
                   @if($menu->favoritedUsers->contains(Auth::user()))
@@ -76,6 +76,7 @@
                   </svg>
                   @endif
                 </button>
+                <span>{{ $menu->favoritedUsers()->count() }}</span>
               </form>
             </div>
             <div class="mb-8">

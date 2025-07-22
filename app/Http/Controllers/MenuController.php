@@ -101,7 +101,7 @@ class MenuController extends Controller
 
         $user = Auth::user();
 
-        $menu->load(['user', 'tags', 'memos']);
+        $menu->load(['user', 'tags', 'memos', 'favoritedUsers']);
         $memo = $menu->memos->where('user_id', $user->id)->first();
         $tag_ids = request()->query('tag_ids', []);
 
