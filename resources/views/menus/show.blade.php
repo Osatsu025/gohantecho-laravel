@@ -76,7 +76,7 @@
                   </svg>
                   @endif
                 </button>
-                <span>{{ $menu->favoritedUsers()->count() }}</span>
+                <span class="@if ($menu->favoritedUsers->contains(Auth::user())) text-pink-500 @endif">{{ $menu->favoritedUsers()->count() }}</span>
               </form>
             </div>
             <div class="mb-8">
