@@ -39,7 +39,7 @@ class MenuController extends Controller
         $is_only_favorited = $validated['is_only_favorited'] ?? null;
 
         $query = Menu::query()
-            ->with(['user', 'tags'])
+            ->with(['user', 'tags', 'favoritedUsers'])
             ->filterByPublic()
             ->searchByKeyword($keyword)
             ->filterByAuthor($author)

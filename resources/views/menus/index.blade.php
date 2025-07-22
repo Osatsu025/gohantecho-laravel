@@ -186,8 +186,8 @@
                             role="button" class="btn btn-xs @if($is_active_tag) btn-soft btn-primary @endif">{{ $tag->name }}</a>
                         @endforeach
                       </td>
-                      <td>
-                        <form method="POST" action="{{ query_route('menus.favorite', ['menu' => $menu]) }}">
+                      <td class="text-center">
+                        <form method="POST" action="{{ query_route('menus.favorite', ['menu' => $menu]) }}" class="inline-flex items-center space-x-1">
                           @csrf
                           <button type="submit">
                             @if($menu->favoritedUsers->contains(Auth::user()))
@@ -200,6 +200,7 @@
                             </svg>
                             @endif
                           </button>
+                          <span>{{ $menu->favoritedUsers()->count() }}</span>
                         </form>
                       </td>
                     </tr>
