@@ -208,7 +208,7 @@
                   </tbody>
                 </table>
                 <div class="mb-4">
-                  {{ $users_menus->appends(request()->query())->links() }}
+                  {{ $users_menus->appends(request()->except('users_page'))->links() }}
                 </div>
               </div>
               
@@ -269,7 +269,7 @@
                   </tbody>
                 </table>
                 <div class="mb-4">
-                  {{ $others_menus->appends(request()->query())->links() }}
+                  {{ $others_menus->appends(request()->except('others_page'))->links() }}
                 </div>
               </div>
             </div>
