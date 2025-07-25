@@ -22,6 +22,7 @@ class MenuController extends Controller
         '更新日の古い順' => ['column' => 'updated_at', 'direction' => 'asc'],
         'お気に入り数の多い順' => ['column' => 'favorited_users_count', 'direction' => 'desc'],
         'メモ作成日の新しい順' => ['column' => 'memo_created_at', 'direction' => 'desc'],
+        'メモ作成日の古い順' => ['column' => 'memo_created_at', 'direction' => 'asc'],
     ];
 
     public function index(MenuIndexRequest $request): View {
@@ -53,19 +54,22 @@ class MenuController extends Controller
         $sort_column = self::SORT_LIST[$sort_type]['column'];
         $sort_direction = self::SORT_LIST[$sort_type]['direction'];
 
+        $query->withCount('favoritedUsers');
+        
         // メモ作成日の新しい順に対応
         if ($sort_column === 'memo_created_at') {
+            $subQueryDirection = ($sort_direction === 'desc') ? 'desc' : 'asc';
             // サブクエリを使って各メニューに紐づく最新のメモ作成日時を取得し、
             // memo_created_atという名前でSELECT結果に含める
             $query->addSelect(['memo_created_at' => Memo::select('created_at')
                                                         ->whereColumn('menus.id', 'memos.menu_id')
-                                                        ->orderByDesc('created_at')
+                                                        ->orderBy('created_at', $subQueryDirection)
                                                         ->limit(1)
             ]);
+            $query->orderByRaw('memo_created_at IS NULL ASC');
         }
 
-        $query->withCount('favoritedUsers')
-                ->orderBy($sort_column, $sort_direction);
+        $query->orderBy($sort_column, $sort_direction);
 
         $other_query = clone $query;
 
