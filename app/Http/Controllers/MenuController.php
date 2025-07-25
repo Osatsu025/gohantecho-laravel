@@ -23,6 +23,8 @@ class MenuController extends Controller
         'お気に入り数の多い順' => ['column' => 'favorited_users_count', 'direction' => 'desc'],
         'メモ作成日の新しい順' => ['column' => 'memo_created_at', 'direction' => 'desc'],
         'メモ作成日の古い順' => ['column' => 'memo_created_at', 'direction' => 'asc'],
+        'メモ更新日の新しい順' => ['column' => 'memo_updated_at', 'direction' => 'desc'],
+        'メモ更新日の古い順' => ['column' => 'memo_updated_at', 'direction' => 'asc'],
     ];
 
     public function index(MenuIndexRequest $request): View {
@@ -55,18 +57,18 @@ class MenuController extends Controller
         $sort_direction = self::SORT_LIST[$sort_type]['direction'];
 
         $query->withCount('favoritedUsers');
-        
-        // メモ作成日の新しい順に対応
-        if ($sort_column === 'memo_created_at') {
-            $subQueryDirection = ($sort_direction === 'desc') ? 'desc' : 'asc';
-            // サブクエリを使って各メニューに紐づく最新のメモ作成日時を取得し、
-            // memo_created_atという名前でSELECT結果に含める
-            $query->addSelect(['memo_created_at' => Memo::select('created_at')
+
+        if ($sort_column === 'memo_created_at' || $sort_column === 'memo_updated_at') {
+            $subquery_direction = ($sort_direction === 'desc') ? 'desc' : 'asc';
+            $subquery_column = str_replace('memo_', '', $sort_column);
+            // サブクエリを使って各メニューに紐づくログイン中ユーザーのメモの日時を取得し、
+            // $sort_columnという名前でSELECT結果に含める
+            $query->addSelect([$sort_column => Memo::select($subquery_column)
                                                         ->whereColumn('menus.id', 'memos.menu_id')
-                                                        ->orderBy('created_at', $subQueryDirection)
-                                                        ->limit(1)
+                                                        ->where('user_id', Auth::id())
+                                                        ->limit(1) // 仕様上は不要だが、サブクエリが単一の値を返すのを保証し、DBエラーを起こさないための防御的プログラミングとして。
             ]);
-            $query->orderByRaw('memo_created_at IS NULL ASC');
+            $query->orderByRaw("{$sort_column} IS NULL ASC");
         }
 
         $query->orderBy($sort_column, $sort_direction);
