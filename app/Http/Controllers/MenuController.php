@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MenuIndexRequest;
 use App\Http\Requests\MenuStoreRequest;
+use App\Models\Memo;
 use App\Models\Menu;
 use App\Models\Tag;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Support\Str;
 
 class MenuController extends Controller
 {
@@ -18,6 +20,11 @@ class MenuController extends Controller
         '作成日の古い順' => ['column' => 'created_at', 'direction' => 'asc'],
         '更新日の新しい順' => ['column' => 'updated_at', 'direction' => 'desc'],
         '更新日の古い順' => ['column' => 'updated_at', 'direction' => 'asc'],
+        'お気に入り数の多い順' => ['column' => 'favorited_users_count', 'direction' => 'desc'],
+        'メモ作成日の新しい順' => ['column' => 'memo_created_at', 'direction' => 'desc'],
+        'メモ作成日の古い順' => ['column' => 'memo_created_at', 'direction' => 'asc'],
+        'メモ更新日の新しい順' => ['column' => 'memo_updated_at', 'direction' => 'desc'],
+        'メモ更新日の古い順' => ['column' => 'memo_updated_at', 'direction' => 'asc'],
     ];
 
     public function index(MenuIndexRequest $request): View {
@@ -39,7 +46,7 @@ class MenuController extends Controller
         $is_only_favorited = $validated['is_only_favorited'] ?? null;
 
         $query = Menu::query()
-            ->with(['user', 'tags'])
+            ->with(['user', 'tags', 'favoritedUsers'])
             ->filterByPublic()
             ->searchByKeyword($keyword)
             ->filterByAuthor($author)
@@ -48,12 +55,28 @@ class MenuController extends Controller
 
         $sort_column = self::SORT_LIST[$sort_type]['column'];
         $sort_direction = self::SORT_LIST[$sort_type]['direction'];
+
+        $query->withCount('favoritedUsers');
+
+        if ($sort_column === 'memo_created_at' || $sort_column === 'memo_updated_at') {
+            $subquery_direction = ($sort_direction === 'desc') ? 'desc' : 'asc';
+            $subquery_column = str_replace('memo_', '', $sort_column);
+            // サブクエリを使って各メニューに紐づくログイン中ユーザーのメモの日時を取得し、
+            // $sort_columnという名前でSELECT結果に含める
+            $query->addSelect([$sort_column => Memo::select($subquery_column)
+                                                        ->whereColumn('menus.id', 'memos.menu_id')
+                                                        ->where('user_id', Auth::id())
+                                                        ->limit(1) // 仕様上は不要だが、サブクエリが単一の値を返すのを保証し、DBエラーを起こさないための防御的プログラミングとして。
+            ]);
+            $query->orderByRaw("{$sort_column} IS NULL ASC");
+        }
+
         $query->orderBy($sort_column, $sort_direction);
 
         $other_query = clone $query;
 
-        $users_menus = $query->where('user_id', Auth::id())->paginate(10);
-        $others_menus = $other_query->whereNot('user_id', Auth::id())->paginate(10);
+        $users_menus = $query->where('menus.user_id', Auth::id())->paginate(10, ['*'], 'users_page');
+        $others_menus = $other_query->whereNot('menus.user_id', Auth::id())->paginate(10, ['*'], 'others_page');
 
         $tags = Tag::all();
 
@@ -101,7 +124,8 @@ class MenuController extends Controller
 
         $user = Auth::user();
 
-        $menu->load(['user', 'tags', 'memos']);
+        $menu->load(['user', 'tags', 'memos'])
+            ->loadCount('favoritedUsers');
         $memo = $menu->memos->where('user_id', $user->id)->first();
         $tag_ids = request()->query('tag_ids', []);
 
