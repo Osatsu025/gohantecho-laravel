@@ -10,6 +10,8 @@ use App\Models\Menu;
 use App\Models\Tag;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB as FacadesDB;
+use Illuminate\Support\Facades\Log as FacadesLog;
 use Illuminate\View\View;
 use Illuminate\Support\Str;
 
@@ -107,12 +109,25 @@ class MenuController extends Controller
         $validated = $request->validated();
         /** @var User $user */
         $user = Auth::user();
-        $menu = $user->menus()->create($validated);
-        
-        $tag_names_str = $validated['input_tags'] ?? '';
-        $tag_ids = Tag::findOrCreateByName($tag_names_str);
 
-        $menu->tags()->attach($tag_ids);
+        try {
+            $menu = FacadesDB::transaction(function () use ($user, $validated) {
+                $menu = $user->menus()->create($validated);
+
+                $tag_names_str = $validated['input_tags'] ?? '';
+                $tag_ids = Tag::findOrCreateByName($tag_names_str);
+
+                $menu->tags()->attach($tag_ids);
+
+                return $menu;
+            });
+        } catch (\Throwable $e) {
+            FacadesLog::error('メニューの登録に失敗しました', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return back()->withInput()->with('error_message', 'メニューの登録に失敗しました');
+        }
 
         $message = $menu->title . 'を登録しました';
 
@@ -153,12 +168,23 @@ class MenuController extends Controller
 
         $validated = $request->validated();
 
-        $menu->update($validated);
+        try {
+            FacadesDB::transaction(function () use ($menu, $validated) {
+                $menu->update($validated);
 
-        $tag_names_str = $validated['input_tags'] ?? '';
-        $tag_ids = Tag::findOrCreateByName($tag_names_str);
+                $tag_names_str = $validated['input_tags'] ?? '';
+                $tag_ids = Tag::findOrCreateByName($tag_names_str);
 
-        $menu->tags()->sync($tag_ids);
+                $menu->tags()->sync($tag_ids);
+            });
+        } catch (\Throwable $e) {
+            FacadesLog::error('メニューの更新に失敗しました', [
+                'menu_id' => $menu->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return back()->withInput()->with('error_message', 'メニューの更新に失敗しました');
+        }
 
         $message = $menu->title . 'を更新しました';
 
@@ -168,10 +194,19 @@ class MenuController extends Controller
     public function destroy(Menu $menu): RedirectResponse {
 
         $this->authorize('delete', $menu);
+
+        try {
+            $menu->delete();
+        } catch(\Throwable $e) {
+            FacadesLog::error('メニューの削除に失敗しました', [
+                'menu_id' => $menu->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return back()->with('error_message', 'メニューの削除に失敗しました');
+        }
         
         $message = $menu->title . 'を削除しました';
-        
-        $menu->delete();
 
         return to_route('menus.index')->with('flash_message', $message);
     }
@@ -182,12 +217,17 @@ class MenuController extends Controller
         
         /** @var User $user */
         $user = Auth::user();
-        $isFavorited = $user->favoriteMenus()->where('menu_id', $menu->id)->exists();
 
-        if ($isFavorited) {
-            $user->favoriteMenus()->detach($menu);
-        } else {
-            $user->favoriteMenus()->attach($menu);
+        try {
+            $user->favoriteMenus()->toggle($menu);
+        } catch (\Throwable $e) {
+            FacadesLog::error('お気に入り操作に失敗しました', [
+                'menu_id' => $menu->id,
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return back()->with('error_message', 'お気に入り操作に失敗しました');
         }
 
         return back();
