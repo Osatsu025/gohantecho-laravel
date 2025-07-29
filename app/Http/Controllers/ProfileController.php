@@ -45,7 +45,7 @@ class ProfileController extends Controller
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            return back()->withInput()->with('error', 'プロフィールの更新に失敗しました。時間をおいて再度お試しください');
+            return back()->withInput()->with('error_message', 'プロフィールの更新に失敗しました。時間をおいて再度お試しください');
         
         }
 
