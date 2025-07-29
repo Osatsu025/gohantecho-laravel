@@ -95,6 +95,7 @@ class MenuController extends Controller
             });
         } catch (\Throwable $e) {
             FacadesLog::error('メニューの登録に失敗しました', [
+                'user_id' => $user->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
@@ -151,6 +152,7 @@ class MenuController extends Controller
             });
         } catch (\Throwable $e) {
             FacadesLog::error('メニューの更新に失敗しました', [
+                'user_id' => $menu->user_id,
                 'menu_id' => $menu->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
