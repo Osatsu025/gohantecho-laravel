@@ -21,6 +21,18 @@ class Menu extends Model
         'public',
     ];
 
+    public const SORT_LIST = [
+        '作成日の新しい順' => ['column' => 'created_at', 'direction' => 'desc'],
+        '作成日の古い順' => ['column' => 'created_at', 'direction' => 'asc'],
+        '更新日の新しい順' => ['column' => 'updated_at', 'direction' => 'desc'],
+        '更新日の古い順' => ['column' => 'updated_at', 'direction' => 'asc'],
+        'お気に入り数の多い順' => ['column' => 'favorited_users_count', 'direction' => 'desc'],
+        'メモ作成日の新しい順' => ['column' => 'memo_created_at', 'direction' => 'desc'],
+        'メモ作成日の古い順' => ['column' => 'memo_created_at', 'direction' => 'asc'],
+        'メモ更新日の新しい順' => ['column' => 'memo_updated_at', 'direction' => 'desc'],
+        'メモ更新日の古い順' => ['column' => 'memo_updated_at', 'direction' => 'asc'],
+    ];
+
     public function tags(): BelongsToMany
     {
         return $this->belongsToMany(Tag::class)
@@ -117,10 +129,10 @@ class Menu extends Model
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeFilterByPublic($query)
+    public function scopeFilterByPublic($query, $user_id)
     {
-        return $query->where(function ($q) {
-                $q->where('menus.user_id', Auth::id())
+        return $query->where(function ($q) use ($user_id) {
+                $q->where('menus.user_id', $user_id)
                     ->orWhere('menus.public', true);
         });
     }
@@ -134,16 +146,49 @@ class Menu extends Model
      *  
      */
 
-     public function scopeFilterByFavorited($query, $is_only_favorited)
-     {
-        if (!$is_only_favorited) {
+    public function scopeFilterByFavorited($query, $is_only_favorited, $user_id)
+    {
+    if (!$is_only_favorited) {
+        return $query;
+    }
+
+    return $query->whereHas('favoritedUsers', function ($q) use ($user_id) {
+        $q->where('menu_favorites.user_id', $user_id);
+    });
+    }
+
+    /**
+     * 条件に応じた並べ替えをするためのスコープ
+     * 
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param  string $sort_type
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeSortByConditions($query, $sort_type, $user_id) {
+
+        if (!$sort_type) {
             return $query;
         }
 
-        return $query->whereHas('favoritedUsers', function ($q) {
-            $q->where('menu_favorites.user_id', Auth::id());
-        });
-     }
+        $sort_column = self::SORT_LIST[$sort_type]['column'];
+        $sort_direction = self::SORT_LIST[$sort_type]['direction'];
+
+        if ($sort_column === 'memo_created_at' || $sort_column === 'memo_updated_at') {
+            $subquery_column = str_replace('memo_', '', $sort_column);
+            // サブクエリを使って各メニューに紐づくログイン中ユーザーのメモの日時を取得し、
+            // $sort_columnという名前でSELECT結果に含める
+            $query->addSelect([$sort_column => Memo::select($subquery_column)
+                                                        ->whereColumn('menus.id', 'memos.menu_id')
+                                                        ->where('user_id', $user_id)
+                                                        ->limit(1) // 仕様上は不要だが、サブクエリが単一の値を返すのを保証し、DBエラーを起こさないための防御的プログラミングとして。
+            ]);
+            $query->orderByRaw("{$sort_column} IS NULL ASC");
+        }
+
+        return $query->orderBy($sort_column, $sort_direction);
+    }
+
+    
 
     /**
      * 関連付けられたタグをスペース区切りの文字列として取得するアクセサ
