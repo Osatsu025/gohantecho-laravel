@@ -29,7 +29,7 @@ class UserDeleteRequest extends FormRequest
         protected function prepareForValidation()
     {
         $this->merge([
-            'is_delete_menus' => $this->has('is_delete_menus'),
+            'is_delete_menus' => $this->boolean('is_delete_menus'),
         ]);
     } 
 }

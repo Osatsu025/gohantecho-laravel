@@ -4,10 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmailUpdateRequest;
-use App\Http\Requests\ProfileUpdateRequest;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log as FacadesLog;
 use Illuminate\Support\Facades\Auth;
 
 class EmailVerificationNotificationController extends Controller
@@ -37,7 +37,18 @@ class EmailVerificationNotificationController extends Controller
     public function update(EmailUpdateRequest $request) {
         /** @var User $user */
         $user = Auth::user();
-        $user->update($request->validated());
+
+        try {
+            $user->update($request->validated());
+        } catch (\Throwable $e) {
+            FacadesLog::error('メールアドレスの更新に失敗しました',[
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return back()->withInput()->with('error_message', 'メールアドレスの更新に失敗しました。時間をおいて再度お試しください');
+        }
 
         event(new Registered($user));
 

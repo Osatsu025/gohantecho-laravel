@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Http\Controllers\MenuController;
+use App\Models\Menu;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -25,7 +26,7 @@ class MenuIndexRequest extends FormRequest
     {
         return [
             'keyword' => ['nullable', 'string',  'max:255'],
-            'sort_type' => ['nullable', 'string', Rule::in(array_keys(MenuController::SORT_LIST))],
+            'sort_type' => ['nullable', 'string', Rule::in(array_keys(Menu::SORT_LIST))],
             'author' => ['nullable', 'string', Rule::exists('users', 'name')],
             'tag_ids' => ['nullable', 'array'],
             'tag_ids.*' => ['numeric', Rule::exists('tags', 'id')],

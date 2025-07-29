@@ -10,34 +10,25 @@ use App\Models\Menu;
 use App\Models\Tag;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB as FacadesDB;
+use Illuminate\Support\Facades\Log as FacadesLog;
 use Illuminate\View\View;
 use Illuminate\Support\Str;
 
 class MenuController extends Controller
 {
-    public const SORT_LIST = [
-        '作成日の新しい順' => ['column' => 'created_at', 'direction' => 'desc'],
-        '作成日の古い順' => ['column' => 'created_at', 'direction' => 'asc'],
-        '更新日の新しい順' => ['column' => 'updated_at', 'direction' => 'desc'],
-        '更新日の古い順' => ['column' => 'updated_at', 'direction' => 'asc'],
-        'お気に入り数の多い順' => ['column' => 'favorited_users_count', 'direction' => 'desc'],
-        'メモ作成日の新しい順' => ['column' => 'memo_created_at', 'direction' => 'desc'],
-        'メモ作成日の古い順' => ['column' => 'memo_created_at', 'direction' => 'asc'],
-        'メモ更新日の新しい順' => ['column' => 'memo_updated_at', 'direction' => 'desc'],
-        'メモ更新日の古い順' => ['column' => 'memo_updated_at', 'direction' => 'asc'],
-    ];
 
     public function index(MenuIndexRequest $request): View {
 
         $this->authorize('viewAny', Menu::class);
 
-        $sort_list = self::SORT_LIST;
-
+        $user_id = Auth::id();
         $validated = $request->validated();
 
         $keyword = $validated['keyword'] ?? null;
         $author = $validated['author'] ?? null;
-        $sort_type = $validated['sort_type'] ?? array_key_first(self::SORT_LIST);
+        $sort_list = Menu::SORT_LIST;
+        $sort_type = $validated['sort_type'] ?? array_key_first(Menu::SORT_LIST);
         $tag_ids = $validated['tag_ids'] ?? [];
         $selected_tags = collect();
         if (!empty($tag_ids)) {
@@ -47,36 +38,19 @@ class MenuController extends Controller
 
         $query = Menu::query()
             ->with(['user', 'tags', 'favoritedUsers'])
-            ->filterByPublic()
+            ->filterByPublic($user_id)
             ->searchByKeyword($keyword)
             ->filterByAuthor($author)
             ->filterByTagIds($tag_ids)
-            ->filterByFavorited($is_only_favorited);
-
-        $sort_column = self::SORT_LIST[$sort_type]['column'];
-        $sort_direction = self::SORT_LIST[$sort_type]['direction'];
+            ->filterByFavorited($is_only_favorited, $user_id)
+            ->sortByConditions($sort_type, $user_id);
 
         $query->withCount('favoritedUsers');
 
-        if ($sort_column === 'memo_created_at' || $sort_column === 'memo_updated_at') {
-            $subquery_direction = ($sort_direction === 'desc') ? 'desc' : 'asc';
-            $subquery_column = str_replace('memo_', '', $sort_column);
-            // サブクエリを使って各メニューに紐づくログイン中ユーザーのメモの日時を取得し、
-            // $sort_columnという名前でSELECT結果に含める
-            $query->addSelect([$sort_column => Memo::select($subquery_column)
-                                                        ->whereColumn('menus.id', 'memos.menu_id')
-                                                        ->where('user_id', Auth::id())
-                                                        ->limit(1) // 仕様上は不要だが、サブクエリが単一の値を返すのを保証し、DBエラーを起こさないための防御的プログラミングとして。
-            ]);
-            $query->orderByRaw("{$sort_column} IS NULL ASC");
-        }
-
-        $query->orderBy($sort_column, $sort_direction);
-
         $other_query = clone $query;
 
-        $users_menus = $query->where('menus.user_id', Auth::id())->paginate(10, ['*'], 'users_page');
-        $others_menus = $other_query->whereNot('menus.user_id', Auth::id())->paginate(10, ['*'], 'others_page');
+        $users_menus = $query->where('menus.user_id', $user_id)->paginate(10, ['*'], 'users_page');
+        $others_menus = $other_query->whereNot('menus.user_id', $user_id)->paginate(10, ['*'], 'others_page');
 
         $tags = Tag::all();
 
@@ -107,12 +81,26 @@ class MenuController extends Controller
         $validated = $request->validated();
         /** @var User $user */
         $user = Auth::user();
-        $menu = $user->menus()->create($validated);
-        
-        $tag_names_str = $validated['input_tags'] ?? '';
-        $tag_ids = Tag::findOrCreateByName($tag_names_str);
 
-        $menu->tags()->attach($tag_ids);
+        try {
+            $menu = FacadesDB::transaction(function () use ($user, $validated) {
+                $menu = $user->menus()->create($validated);
+
+                $tag_names_str = $validated['input_tags'] ?? '';
+                $tag_ids = Tag::findOrCreateByName($tag_names_str);
+
+                $menu->tags()->attach($tag_ids);
+
+                return $menu;
+            });
+        } catch (\Throwable $e) {
+            FacadesLog::error('メニューの登録に失敗しました', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return back()->withInput()->with('error_message', 'メニューの登録に失敗しました');
+        }
 
         $message = $menu->title . 'を登録しました';
 
@@ -153,12 +141,24 @@ class MenuController extends Controller
 
         $validated = $request->validated();
 
-        $menu->update($validated);
+        try {
+            FacadesDB::transaction(function () use ($menu, $validated) {
+                $menu->update($validated);
 
-        $tag_names_str = $validated['input_tags'] ?? '';
-        $tag_ids = Tag::findOrCreateByName($tag_names_str);
+                $tag_names_str = $validated['input_tags'] ?? '';
+                $tag_ids = Tag::findOrCreateByName($tag_names_str);
 
-        $menu->tags()->sync($tag_ids);
+                $menu->tags()->sync($tag_ids);
+            });
+        } catch (\Throwable $e) {
+            FacadesLog::error('メニューの更新に失敗しました', [
+                'user_id' => $menu->user_id,
+                'menu_id' => $menu->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return back()->withInput()->with('error_message', 'メニューの更新に失敗しました');
+        }
 
         $message = $menu->title . 'を更新しました';
 
@@ -168,10 +168,19 @@ class MenuController extends Controller
     public function destroy(Menu $menu): RedirectResponse {
 
         $this->authorize('delete', $menu);
+
+        try {
+            $menu->delete();
+        } catch(\Throwable $e) {
+            FacadesLog::error('メニューの削除に失敗しました', [
+                'menu_id' => $menu->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return back()->with('error_message', 'メニューの削除に失敗しました');
+        }
         
         $message = $menu->title . 'を削除しました';
-        
-        $menu->delete();
 
         return to_route('menus.index')->with('flash_message', $message);
     }
@@ -182,12 +191,17 @@ class MenuController extends Controller
         
         /** @var User $user */
         $user = Auth::user();
-        $isFavorited = $user->favoriteMenus()->where('menu_id', $menu->id)->exists();
 
-        if ($isFavorited) {
-            $user->favoriteMenus()->detach($menu);
-        } else {
-            $user->favoriteMenus()->attach($menu);
+        try {
+            $user->favoriteMenus()->toggle($menu);
+        } catch (\Throwable $e) {
+            FacadesLog::error('お気に入り操作に失敗しました', [
+                'menu_id' => $menu->id,
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return back()->with('error_message', 'お気に入り操作に失敗しました');
         }
 
         return back();

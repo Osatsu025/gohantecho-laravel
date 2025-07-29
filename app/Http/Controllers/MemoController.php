@@ -8,6 +8,7 @@ use App\Models\Memo;
 use App\Models\Menu;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log as FacadesLog;
 
 class MemoController extends Controller
 {
@@ -20,10 +21,20 @@ class MemoController extends Controller
         /** @var User $user */
         $user = Auth::user();
 
-        $user->memos()->create([
-            ...$validated,
-            'menu_id' => $menu->id
-        ]);
+        try {
+            $user->memos()->create([
+                ...$validated,
+                'menu_id' => $menu->id
+            ]);
+        } catch(\Throwable $e) {
+            FacadesLog::error('メモの登録に失敗しました', [
+                'menu_id' => $menu->id,
+                'user_id' => $user->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return back()->withInput()->with('error_message', 'メモの登録に失敗しました');
+        }
 
         return back()->with('flash_message', 'メモを登録しました');
     }
@@ -33,7 +44,17 @@ class MemoController extends Controller
         $this->authorize('update', $memo);
 
         $validated = $request->validated();
-        $memo->update($validated);
+
+        try {
+            $memo->update($validated);
+        } catch(\Throwable $e) {
+            FacadesLog::error('メモの更新に失敗しました', [
+                'memo_id' => $memo->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return back()->withInput()->with('error_message', 'メモの更新に失敗しました');
+        }
 
         return back()->with('flash_message', 'メモを更新しました');
     }
@@ -42,7 +63,16 @@ class MemoController extends Controller
     {
         $this->authorize('delete', $memo);
         
-        $memo->delete();
+        try {
+            $memo->delete();
+        } catch(\Throwable $e) {
+            FacadesLog::error('メモの削除に失敗しました', [
+                'memo_id' => $memo->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return back()->with('error_message', 'メモの削除に失敗しました');
+        }
 
         return back()->with('flash_message', 'メモを削除しました');
     }
