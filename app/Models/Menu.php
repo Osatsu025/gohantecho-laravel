@@ -127,6 +127,7 @@ class Menu extends Model
      * 作者が自分のメニュー/公開設定がONのメニューに絞り込むためのスコープ
      * 
      * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param int|null $user_id
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeFilterByPublic($query, $user_id)
@@ -142,8 +143,8 @@ class Menu extends Model
      * 
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param boolean $is_only_favorited
-     * @param \Illuminate\Database\Eloquent\Builder
-     *  
+     * @param int|null $user_id
+     * @return \Illuminate\Database\Eloquent\Builder
      */
 
     public function scopeFilterByFavorited($query, $is_only_favorited, $user_id)
@@ -162,6 +163,7 @@ class Menu extends Model
      * 
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param  string $sort_type
+     * @param int|null $user_id
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeSortByConditions($query, $sort_type, $user_id) {
